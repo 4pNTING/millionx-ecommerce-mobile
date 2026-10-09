@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MillionX Store · Chrome",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "toolArgs": ["--web-port=9070", "--dart-define=API_BASE_URL=http://localhost:3001/api-gateway"]
+    },
+    {
+      "name": "MillionX Store · Android emulator",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define=API_BASE_URL=http://10.0.2.2:3001/api-gateway"]
+    }
+  ]
+}
