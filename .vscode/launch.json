@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "MillionX Store · iPhone (192.168.100.46)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define=API_BASE_URL=http://192.168.100.46:3001/api-gateway"]
+    },
+    {
       "name": "MillionX Store · Chrome",
       "request": "launch",
       "type": "dart",
