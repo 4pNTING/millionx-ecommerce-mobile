@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import ตัวนี้เข้ามา
 import 'features/auth/presentation/onboarding_screen.dart'; // บรรทัดนี้ที่ขาดไป
 
@@ -22,3 +23,13 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+=======
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'app/app.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ProviderScope(child: MillionXApp()));
+}
+>>>>>>> origin/Login/signup-and-home-screen
