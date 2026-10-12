@@ -11,6 +11,7 @@ import '../domain/usecases/login_customer.dart';
 import '../domain/usecases/logout.dart';
 import '../domain/usecases/restore_session.dart';
 import '../domain/usecases/register_customer.dart';
+import '../domain/usecases/social_login_customer.dart';
 import 'auth_controller.dart';
 
 final secureStorageProvider = Provider<FlutterSecureStorage>(
@@ -39,5 +40,6 @@ final authControllerProvider = ChangeNotifierProvider<AuthController>((ref) {
     Logout(repository),
     RestoreSession(repository),
     RegisterCustomer(repository),
+    SocialLoginCustomer(repository),
   );
 });

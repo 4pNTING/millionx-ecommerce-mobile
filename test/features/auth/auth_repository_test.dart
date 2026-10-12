@@ -30,6 +30,20 @@ void main() {
     expect(local.saved?.token, 'access-token');
   });
 
+  test('social login saves session into local storage', () async {
+    final local = _FakeLocal();
+    final remote = _FakeRemote(session: session);
+    final repository = AuthRepositoryImpl(remote, local);
+
+    final result = await repository.socialLogin(
+      provider: 'GOOGLE',
+      token: 'id-token-123',
+    );
+
+    expect(result.customerId, 'customer-1');
+    expect(local.saved?.token, 'access-token');
+  });
+
   test('restore refreshes stored session', () async {
     final local = _FakeLocal()..saved = session;
     final remote = _FakeRemote(session: session);
@@ -109,6 +123,14 @@ class _FakeRemote implements AuthRemoteDataSource {
     required String password,
   }) async {
     this.identifier = identifier;
+    return session;
+  }
+
+  @override
+  Future<AuthSessionModel> socialLogin({
+    required String provider,
+    required String token,
+  }) async {
     return session;
   }
 

@@ -52,6 +52,46 @@ void main() {
       'input': {'refreshToken': 'refresh-token'},
     });
   });
+
+  test('social login sends SocialLoginCustomer mutation for GOOGLE', () async {
+    final gateway = _FakeGateway();
+    final remote = GraphQlAuthRemoteDataSource(gateway);
+
+    final session = await remote.socialLogin(
+      provider: 'GOOGLE',
+      token: 'google-id-token-xyz',
+    );
+
+    expect(gateway.document, contains('socialLoginCustomer(input: \$input)'));
+    expect(gateway.document, contains('SocialLoginCustomerInput!'));
+    expect(gateway.variables, {
+      'input': {
+        'provider': 'GOOGLE',
+        'token': 'google-id-token-xyz',
+      },
+    });
+    expect(session.customerId, 'customer-1');
+  });
+
+  test('social login sends SocialLoginCustomer mutation for FACEBOOK', () async {
+    final gateway = _FakeGateway();
+    final remote = GraphQlAuthRemoteDataSource(gateway);
+
+    final session = await remote.socialLogin(
+      provider: 'FACEBOOK',
+      token: 'facebook-access-token-abc',
+    );
+
+    expect(gateway.document, contains('socialLoginCustomer(input: \$input)'));
+    expect(gateway.document, contains('SocialLoginCustomerInput!'));
+    expect(gateway.variables, {
+      'input': {
+        'provider': 'FACEBOOK',
+        'token': 'facebook-access-token-abc',
+      },
+    });
+    expect(session.customerId, 'customer-1');
+  });
 }
 
 class _FakeGateway implements GraphQlGateway {
@@ -71,6 +111,8 @@ class _FakeGateway implements GraphQlGateway {
           ? 'refreshCustomerToken'
           : document.contains('registerCustomer')
           ? 'registerCustomer'
+          : document.contains('socialLoginCustomer')
+          ? 'socialLoginCustomer'
           : 'loginCustomer': {
         'accountId': 'account-1',
         'customerId': 'customer-1',

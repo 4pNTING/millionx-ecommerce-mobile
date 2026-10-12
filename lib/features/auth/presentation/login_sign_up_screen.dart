@@ -85,41 +85,68 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
   void _handleGoogleLogin() {
     SocialLoginModal.showGoogleAccountChooser(
       context: context,
-      onAccountSelected: () => _completeSocialLogin('Google'),
+      onAccountSelected: () => _completeSocialLogin(
+        providerName: 'Google',
+        providerCode: 'GOOGLE',
+        token: 'sample-google-id-token',
+      ),
     );
   }
 
   void _handleFacebookLogin() {
     SocialLoginModal.showFacebookLoginConfirm(
       context: context,
-      onConfirm: () => _completeSocialLogin('Facebook'),
+      onConfirm: () => _completeSocialLogin(
+        providerName: 'Facebook',
+        providerCode: 'FACEBOOK',
+        token: 'sample-facebook-access-token',
+      ),
     );
   }
 
-  Future<void> _completeSocialLogin(String provider) async {
+  Future<void> _completeSocialLogin({
+    required String providerName,
+    required String providerCode,
+    required String token,
+  }) async {
     if (!mounted) return;
-    SocialLoginModal.showLoadingDialog(context, provider);
+    SocialLoginModal.showLoadingDialog(context, providerName);
 
-    await Future.delayed(const Duration(milliseconds: 700));
+    final authController = ref.read(authControllerProvider);
+    final success = await authController.socialLogin(
+      provider: providerCode,
+      token: token,
+    );
 
     if (!mounted) return;
     Navigator.of(context, rootNavigator: true).pop();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Welcome! Successfully signed in with $provider.'),
-        backgroundColor: const Color(0xFF10B981),
-      ),
-    );
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Welcome! Successfully signed in with $providerName.'),
+          backgroundColor: const Color(0xFF10B981),
+        ),
+      );
 
-    if (mounted) {
-      try {
-        context.go('/');
-      } catch (_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+      if (mounted) {
+        try {
+          context.go('/');
+        } catch (_) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
       }
+    } else {
+      final error = authController.errorMessage ??
+          'Failed to sign in with $providerName. Please try again.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
     }
   }
 

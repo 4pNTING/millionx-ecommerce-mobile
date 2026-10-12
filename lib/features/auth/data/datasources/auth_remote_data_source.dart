@@ -9,6 +9,11 @@ abstract interface class AuthRemoteDataSource {
     required String password,
   });
 
+  Future<AuthSessionModel> socialLogin({
+    required String provider,
+    required String token,
+  });
+
   Future<AuthSessionModel> refresh(String refreshToken);
 }
 
@@ -53,6 +58,22 @@ class GraphQlAuthRemoteDataSource implements AuthRemoteDataSource {
       },
     );
     return _readSession(data, 'loginCustomer');
+  }
+
+  @override
+  Future<AuthSessionModel> socialLogin({
+    required String provider,
+    required String token,
+  }) async {
+    final data = await _gateway.execute(
+      document:
+          'mutation SocialLoginCustomer(\$input: SocialLoginCustomerInput!) {'
+          ' socialLoginCustomer(input: \$input) { $_fields } }',
+      variables: {
+        'input': {'provider': provider, 'token': token},
+      },
+    );
+    return _readSession(data, 'socialLoginCustomer');
   }
 
   @override

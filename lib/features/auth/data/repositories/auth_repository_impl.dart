@@ -32,6 +32,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<AuthSession> socialLogin({
+    required String provider,
+    required String token,
+  }) async {
+    final session = await _remote.socialLogin(
+      provider: provider,
+      token: token,
+    );
+    await _local.writeSession(session);
+    return session;
+  }
+
+  @override
   Future<AuthSession?> restoreSession() async {
     try {
       final saved = await _local.readSession();

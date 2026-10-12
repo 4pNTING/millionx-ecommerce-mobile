@@ -6,6 +6,7 @@ import '../domain/usecases/register_customer.dart';
 import '../domain/usecases/login_customer.dart';
 import '../domain/usecases/logout.dart';
 import '../domain/usecases/restore_session.dart';
+import '../domain/usecases/social_login_customer.dart';
 
 enum AuthStatus { restoring, restoreFailed, signedOut, signingIn, signedIn }
 
@@ -15,6 +16,7 @@ class AuthController extends ChangeNotifier {
     this._logout,
     this._restoreSession,
     this._register,
+    this._socialLogin,
   ) {
     Future.microtask(restore);
   }
@@ -23,6 +25,7 @@ class AuthController extends ChangeNotifier {
   final Logout _logout;
   final RestoreSession _restoreSession;
   final RegisterCustomer _register;
+  final SocialLoginCustomer _socialLogin;
 
   AuthStatus _status = AuthStatus.restoring;
   AuthSession? _session;
@@ -59,6 +62,30 @@ class AuthController extends ChangeNotifier {
 
     try {
       _session = await _login(identifier: identifier, password: password);
+      _status = AuthStatus.signedIn;
+      notifyListeners();
+      return true;
+    } catch (error) {
+      _session = null;
+      _status = AuthStatus.signedOut;
+      _errorMessage = error.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> socialLogin({
+    required String provider,
+    required String token,
+  }) async {
+    if (_status == AuthStatus.signingIn) return false;
+
+    _status = AuthStatus.signingIn;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _session = await _socialLogin(provider: provider, token: token);
       _status = AuthStatus.signedIn;
       notifyListeners();
       return true;

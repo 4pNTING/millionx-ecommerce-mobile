@@ -8,6 +8,11 @@ abstract interface class AuthRepository {
     required String password,
   });
 
+  Future<AuthSession> socialLogin({
+    required String provider,
+    required String token,
+  });
+
   Future<AuthSession?> restoreSession();
   Future<void> logout();
 }
