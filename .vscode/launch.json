@@ -6,6 +6,7 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
+      "deviceId": "iPhone 18 Pro",
       "toolArgs": ["--dart-define=API_BASE_URL=http://localhost:3001/api-gateway"]
     },
     {
