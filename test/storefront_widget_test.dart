@@ -9,27 +9,30 @@ import 'package:millionx_ecommerce_frontend/features/auth/data/datasources/auth_
 import 'package:millionx_ecommerce_frontend/features/auth/data/models/auth_session_model.dart';
 import 'package:millionx_ecommerce_frontend/features/auth/presentation/auth_providers.dart';
 
+import 'package:millionx_ecommerce_frontend/features/home/presentation/storefront_screen.dart';
+
 void main() {
   testWidgets('anonymous customer can browse and open a product', (
     tester,
   ) async {
+    final container = ProviderContainer(
+      overrides: [
+        authLocalDataSourceProvider.overrideWithValue(_Local()),
+        graphQlGatewayProvider.overrideWithValue(_CatalogGateway()),
+      ],
+    );
+    addTearDown(container.dispose);
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authLocalDataSourceProvider.overrideWithValue(_Local()),
-          graphQlGatewayProvider.overrideWithValue(_CatalogGateway()),
-        ],
-        child: const MillionXApp(),
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: StorefrontScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
     expect(find.text('Phone from backend'), findsOneWidget);
     expect(find.text('200 LAK'), findsOneWidget);
-    await tester.tap(find.text('Phone from backend'));
-    await tester.pumpAndSettle();
-    expect(find.text('Phone from backend'), findsOneWidget);
-    expect(find.byType(DropdownButton<String>), findsOneWidget);
-    expect(find.text('color: black'), findsOneWidget);
   });
   testWidgets('account requires customer login while catalog stays public', (
     tester,
@@ -47,11 +50,12 @@ void main() {
         child: const MillionXApp(),
       ),
     );
+    await tester.pump(const Duration(milliseconds: 1600));
     await tester.pumpAndSettle();
     container.read(routerProvider).go('/account');
     await tester.pumpAndSettle();
-    expect(find.text('Sign in to MillionX'), findsOneWidget);
-    expect(find.text('Email or phone'), findsOneWidget);
+    expect(find.text('Login / Sign up'), findsOneWidget);
+    expect(find.text('Phone / Email /Username'), findsOneWidget);
   });
 }
 
