@@ -23,10 +23,14 @@ class FlutterSocialAuthService implements SocialAuthService {
   Future<String?> signInWithGoogle({String? serverClientId}) async {
     try {
       if (!_googleInitialized) {
-        await GoogleSignIn.instance.initialize(
-          serverClientId: serverClientId,
-        );
         _googleInitialized = true;
+        try {
+          await GoogleSignIn.instance.initialize(
+            serverClientId: serverClientId,
+          );
+        } catch (e) {
+          debugPrint('[SocialAuthService] Google initialize warning: $e');
+        }
       }
       final account = await GoogleSignIn.instance.authenticate();
       final token = account.authentication.idToken;
