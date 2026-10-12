@@ -100,9 +100,11 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         providerCode: 'GOOGLE',
         token: token,
       );
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).maybePop();
+      try {
+        Navigator.of(context, rootNavigator: true).pop();
+      } catch (_) {}
 
       // If native SDK is not yet configured with client ID, fallback to dev modal
       SocialLoginModal.showGoogleAccountChooser(
@@ -110,7 +112,7 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         onAccountSelected: () => _completeSocialLogin(
           providerName: 'Google',
           providerCode: 'GOOGLE',
-          token: 'dev-google-id-token',
+          token: 'mock-google-1:customer@gmail.com',
         ),
       );
     }
@@ -134,17 +136,19 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         providerCode: 'FACEBOOK',
         token: token,
       );
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).maybePop();
+      try {
+        Navigator.of(context, rootNavigator: true).pop();
+      } catch (_) {}
 
-      // If native SDK is not yet configured with App ID, fallback to dev modal
+      // If native SDK is not yet configured with App ID, inform user or fallback to dev modal
       SocialLoginModal.showFacebookLoginConfirm(
         context: context,
         onConfirm: () => _completeSocialLogin(
           providerName: 'Facebook',
           providerCode: 'FACEBOOK',
-          token: 'dev-facebook-access-token',
+          token: 'mock-facebook-1:customer@facebook.com',
         ),
       );
     }
