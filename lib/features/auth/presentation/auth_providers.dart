@@ -12,7 +12,12 @@ import '../domain/usecases/logout.dart';
 import '../domain/usecases/restore_session.dart';
 import '../domain/usecases/register_customer.dart';
 import '../domain/usecases/social_login_customer.dart';
+import '../data/services/social_auth_service.dart';
 import 'auth_controller.dart';
+
+final socialAuthServiceProvider = Provider<SocialAuthService>(
+  (ref) => FlutterSocialAuthService(),
+);
 
 final secureStorageProvider = Provider<FlutterSecureStorage>(
   (ref) => const FlutterSecureStorage(),

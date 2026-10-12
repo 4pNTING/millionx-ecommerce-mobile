@@ -82,26 +82,72 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
     );
   }
 
-  void _handleGoogleLogin() {
-    SocialLoginModal.showGoogleAccountChooser(
-      context: context,
-      onAccountSelected: () => _completeSocialLogin(
+  Future<void> _handleGoogleLogin() async {
+    try {
+      final socialAuth = ref.read(socialAuthServiceProvider);
+      SocialLoginModal.showLoadingDialog(context, 'Google');
+      final token = await socialAuth.signInWithGoogle();
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (token == null) {
+        // User cancelled sign-in
+        return;
+      }
+
+      await _completeSocialLogin(
         providerName: 'Google',
         providerCode: 'GOOGLE',
-        token: 'sample-google-id-token',
-      ),
-    );
+        token: token,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).maybePop();
+
+      // If native SDK is not yet configured with client ID, fallback to dev modal
+      SocialLoginModal.showGoogleAccountChooser(
+        context: context,
+        onAccountSelected: () => _completeSocialLogin(
+          providerName: 'Google',
+          providerCode: 'GOOGLE',
+          token: 'dev-google-id-token',
+        ),
+      );
+    }
   }
 
-  void _handleFacebookLogin() {
-    SocialLoginModal.showFacebookLoginConfirm(
-      context: context,
-      onConfirm: () => _completeSocialLogin(
+  Future<void> _handleFacebookLogin() async {
+    try {
+      final socialAuth = ref.read(socialAuthServiceProvider);
+      SocialLoginModal.showLoadingDialog(context, 'Facebook');
+      final token = await socialAuth.signInWithFacebook();
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (token == null) {
+        // User cancelled sign-in
+        return;
+      }
+
+      await _completeSocialLogin(
         providerName: 'Facebook',
         providerCode: 'FACEBOOK',
-        token: 'sample-facebook-access-token',
-      ),
-    );
+        token: token,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).maybePop();
+
+      // If native SDK is not yet configured with App ID, fallback to dev modal
+      SocialLoginModal.showFacebookLoginConfirm(
+        context: context,
+        onConfirm: () => _completeSocialLogin(
+          providerName: 'Facebook',
+          providerCode: 'FACEBOOK',
+          token: 'dev-facebook-access-token',
+        ),
+      );
+    }
   }
 
   Future<void> _completeSocialLogin({
