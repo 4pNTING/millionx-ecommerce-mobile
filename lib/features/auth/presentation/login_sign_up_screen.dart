@@ -106,13 +106,10 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         Navigator.of(context, rootNavigator: true).pop();
       } catch (_) {}
 
-      // If native SDK is not yet configured with client ID, fallback to dev modal
-      SocialLoginModal.showGoogleAccountChooser(
-        context: context,
-        onAccountSelected: () => _completeSocialLogin(
-          providerName: 'Google',
-          providerCode: 'GOOGLE',
-          token: 'mock-google-1:customer@gmail.com',
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google Sign-In failed: $error'),
+          backgroundColor: Colors.red.shade700,
         ),
       );
     }
@@ -142,13 +139,10 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         Navigator.of(context, rootNavigator: true).pop();
       } catch (_) {}
 
-      // If native SDK is not yet configured with App ID, inform user or fallback to dev modal
-      SocialLoginModal.showFacebookLoginConfirm(
-        context: context,
-        onConfirm: () => _completeSocialLogin(
-          providerName: 'Facebook',
-          providerCode: 'FACEBOOK',
-          token: 'mock-facebook-1:customer@facebook.com',
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Facebook Login failed: $error'),
+          backgroundColor: Colors.red.shade700,
         ),
       );
     }
