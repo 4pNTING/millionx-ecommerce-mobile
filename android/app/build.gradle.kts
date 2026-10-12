@@ -6,7 +6,11 @@ plugins {
 
 android {
     namespace = "com.example.millionx_ecommerce_frontend"
+<<<<<<< HEAD
+    compileSdk = 37
+=======
     compileSdk = flutter.compileSdkVersion
+>>>>>>> origin/Login/signup-and-home-screen
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
