@@ -1,342 +1,166 @@
 import 'package:flutter/material.dart';
 
+/// Navigation item definition for HomeBottomNavBar
+class _HomeNavItem {
+  const _HomeNavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+}
+
+/// Modern floating bottom navigation bar for the MillionX storefront.
 class HomeBottomNavBar extends StatelessWidget {
-  const HomeBottomNavBar({super.key});
+  const HomeBottomNavBar({
+    super.key,
+    this.currentIndex = 0,
+    this.onTap,
+  });
+
+  final int currentIndex;
+  final ValueChanged<int>? onTap;
+
+  static const List<_HomeNavItem> _items = [
+    _HomeNavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'ຫນ້າຫລັກ',
+    ),
+    _HomeNavItem(
+      icon: Icons.grid_view_outlined,
+      activeIcon: Icons.grid_view_rounded,
+      label: 'ຫມວດໝູ່',
+    ),
+    _HomeNavItem(
+      icon: Icons.local_offer_outlined,
+      activeIcon: Icons.local_offer_rounded,
+      label: 'ໂປຣໂມຊັ່ນ',
+    ),
+    _HomeNavItem(
+      icon: Icons.chat_bubble_outline_rounded,
+      activeIcon: Icons.chat_bubble_rounded,
+      label: 'ແຊ໊ດ',
+    ),
+    _HomeNavItem(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'ໂປຣໄຟລ໌',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: 19,
-      top: 852,
-      child: SizedBox(
-        width: 482,
-        height: 65,
-        child: Stack(
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                width: 401.45,
-                height: 65,
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  shadows: const [
-                    BoxShadow(
-                      color: Color(0x3F000000),
-                      blurRadius: 5,
-                      offset: Offset(0, 0),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 155.90,
-              top: 6.50,
-              child: SizedBox(
-                width: 139.01,
-                height: 52,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 25.98,
-                      top: 0,
-                      child: Container(
-                        width: 25.98,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 2.60,
-                      top: 16.90,
-                      child: Opacity(
-                        opacity: 0,
-                        child: Text(
-                          'ຫມວດໝູ່',
-                          style: TextStyle(
-                            color: const Color(0xFF151515),
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 218.26,
-              top: 6.50,
-              child: SizedBox(
-                width: 139.01,
-                height: 52,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 25.98,
-                      top: 0,
-                      child: Container(
-                        width: 25.98,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 2.60,
-                      top: 16.90,
-                      child: Opacity(
-                        opacity: 0,
-                        child: Text(
-                          'ໂປຣໂມຊັ່ນ',
-                          style: TextStyle(
-                            color: const Color(0xFF151515),
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 18.84,
-                      top: 32.50,
-                      child: Container(
-                        width: 5.20,
-                        height: 5.20,
-                        decoration: ShapeDecoration(
-                          shape: OvalBorder(
-                            side: BorderSide(
-                              width: 1.50,
-                              color: const Color(0xFF151515),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 29.23,
-                      top: 32.50,
-                      child: Container(
-                        width: 5.20,
-                        height: 5.20,
-                        decoration: ShapeDecoration(
-                          shape: OvalBorder(
-                            side: BorderSide(
-                              width: 1.50,
-                              color: const Color(0xFF151515),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 280.63,
-              top: 6.50,
-              child: SizedBox(
-                width: 139.01,
-                height: 52,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 25.98,
-                      top: 0,
-                      child: Container(
-                        width: 25.98,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 2.60,
-                      top: 16.90,
-                      child: Opacity(
-                        opacity: 0,
-                        child: Text(
-                          'ແຊ໊ດ',
-                          style: TextStyle(
-                            color: const Color(0xFF151515),
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 342.99,
-              top: 6.50,
-              child: SizedBox(
-                width: 139.01,
-                height: 52,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 25.98,
-                      top: 0,
-                      child: Container(
-                        width: 25.98,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 2.60,
-                      top: 16.90,
-                      child: Opacity(
-                        opacity: 0,
-                        child: Text(
-                          'ໂປຮໄຟຣ',
-                          style: TextStyle(
-                            color: const Color(0xFF151515),
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 22.09,
-                      top: 16.90,
-                      child: Container(
-                        width: 7.80,
-                        height: 7.80,
-                        decoration: ShapeDecoration(
-                          shape: OvalBorder(
-                            side: BorderSide(
-                              width: 1.50,
-                              strokeAlign: BorderSide.strokeAlignOutside,
-                              color: const Color(0xFF151515),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 6.50,
-              top: 6.50,
-              child: SizedBox(
-                width: 139.01,
-                height: 52,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      child: Container(
-                        width: 51.97,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment(2.49, 0.51),
-                            end: Alignment(-0.00, 0.51),
-                            colors: const [Color(0xFFFB658D), Color(0xFFFB255A)],
-                          ),
-                          shape: const OvalBorder(),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 25.98,
-                      top: 0,
-                      child: Container(
-                        width: 113.03,
-                        height: 52,
-                        decoration: ShapeDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment(1.00, 0.50),
-                            end: Alignment(0.00, 0.50),
-                            colors: const [Color(0xFFF43F5E), Color(0xFFFB255A)],
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 33.78,
-                      top: 16.25,
-                      child: SizedBox(
-                        width: 19.49,
-                        height: 19.50,
-                        child: Stack(),
-                      ),
-                    ),
-                    Positioned(
-                      left: 63.66,
-                      top: 16.90,
-                      child: const Text(
-                        'ຫນ້າຫລັກ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 410),
+      height: 64,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.10),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+            spreadRadius: 0,
+          ),
+        ],
+        border: Border.all(
+          color: const Color(0xFFF1F5F9),
+          width: 1,
         ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(_items.length, (index) {
+          final isSelected = index == currentIndex;
+          final item = _items[index];
+
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => onTap?.call(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOutCubic,
+              padding: isSelected
+                  ? const EdgeInsets.symmetric(horizontal: 14, vertical: 8)
+                  : const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: isSelected
+                  ? BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Color(0xFFFB658D),
+                          Color(0xFFFB255A),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFB255A).withValues(alpha: 0.35),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    )
+                  : null,
+              child: isSelected
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          item.activeIcon,
+                          color: Colors.white,
+                          size: 19,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          item.label,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          item.icon,
+                          color: const Color(0xFF64748B),
+                          size: 21,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          item.label,
+                          style: const TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 10,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          );
+        }),
       ),
     );
   }
