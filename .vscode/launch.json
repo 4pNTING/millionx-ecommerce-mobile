@@ -1,20 +1,20 @@
 {
   "version": "0.2.0",
   "configurations": [
+    
     {
       "name": "MillionX Store · iOS Simulator",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "deviceId": "iPhone 18 Pro",
       "toolArgs": ["--dart-define=API_BASE_URL=http://localhost:3001/api-gateway"]
     },
     {
-      "name": "MillionX Store · iPhone (192.168.100.46)",
+      "name": "MillionX Store · iPhone (192.168.100.51)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "toolArgs": ["--dart-define=API_BASE_URL=http://192.168.100.46:3001/api-gateway"]
+      "toolArgs": ["--dart-define=API_BASE_URL=http://192.168.100.51:3001/api-gateway"]
     },
     {
       "name": "MillionX Store · Chrome",
