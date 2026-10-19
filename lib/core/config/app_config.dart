@@ -34,8 +34,28 @@ abstract final class AppConfig {
 
     return switch (defaultTargetPlatform) {
       TargetPlatform.android => 'http://10.0.2.2:3001/api-gateway',
-      TargetPlatform.iOS => 'http://192.168.100.46:3001/api-gateway',
-      _ => 'http://192.168.100.46:3001/api-gateway',
+      TargetPlatform.iOS => 'http://192.168.100.51:3001/api-gateway',
+      _ => 'http://192.168.100.51:3001/api-gateway',
+    };
+  }
+
+  static List<String> get fallbackGraphQlEndpoints {
+    if (kIsWeb) return const ['http://127.0.0.1:3001/api-gateway'];
+
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android => const [
+        'http://10.0.2.2:3001/api-gateway',
+      ],
+      TargetPlatform.iOS => const [
+        'http://localhost:3001/api-gateway',
+        'http://127.0.0.1:3001/api-gateway',
+        'http://192.168.100.51:3001/api-gateway',
+      ],
+      _ => const [
+        'http://localhost:3001/api-gateway',
+        'http://127.0.0.1:3001/api-gateway',
+        'http://192.168.100.51:3001/api-gateway',
+      ],
     };
   }
 }
