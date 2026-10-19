@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Navigation item definition for HomeBottomNavBar
-class _HomeNavItem {
-  const _HomeNavItem({
+class _NavItem {
+  const _NavItem({
     required this.icon,
     required this.activeIcon,
     required this.label,
@@ -13,39 +12,43 @@ class _HomeNavItem {
   final String label;
 }
 
-/// Modern floating bottom navigation bar for the MillionX storefront.
+/// Floating bottom navigation bar placed at its designated position in the Home canvas.
 class HomeBottomNavBar extends StatelessWidget {
   const HomeBottomNavBar({
     super.key,
     this.currentIndex = 0,
     this.onTap,
+    this.left = 19.0,
+    this.top = 852.0,
   });
 
   final int currentIndex;
   final ValueChanged<int>? onTap;
+  final double left;
+  final double top;
 
-  static const List<_HomeNavItem> _items = [
-    _HomeNavItem(
+  static const List<_NavItem> _items = [
+    _NavItem(
       icon: Icons.home_outlined,
       activeIcon: Icons.home_rounded,
       label: 'ຫນ້າຫລັກ',
     ),
-    _HomeNavItem(
+    _NavItem(
       icon: Icons.grid_view_outlined,
       activeIcon: Icons.grid_view_rounded,
       label: 'ຫມວດໝູ່',
     ),
-    _HomeNavItem(
+    _NavItem(
       icon: Icons.local_offer_outlined,
       activeIcon: Icons.local_offer_rounded,
       label: 'ໂປຣໂມຊັ່ນ',
     ),
-    _HomeNavItem(
+    _NavItem(
       icon: Icons.chat_bubble_outline_rounded,
       activeIcon: Icons.chat_bubble_rounded,
       label: 'ແຊ໊ດ',
     ),
-    _HomeNavItem(
+    _NavItem(
       icon: Icons.person_outline_rounded,
       activeIcon: Icons.person_rounded,
       label: 'ໂປຣໄຟລ໌',
@@ -54,113 +57,105 @@ class HomeBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 410),
-      height: 64,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.10),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-            spreadRadius: 0,
+    return Positioned(
+      left: left,
+      top: top,
+      child: SizedBox(
+        width: 402,
+        height: 65,
+        child: Container(
+          width: 402,
+          height: 65,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x3F000000),
+                blurRadius: 5,
+                offset: Offset(0, 0),
+                spreadRadius: 0,
+              ),
+            ],
           ),
-          BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 1),
-            spreadRadius: 0,
-          ),
-        ],
-        border: Border.all(
-          color: const Color(0xFFF1F5F9),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(_items.length, (index) {
-          final isSelected = index == currentIndex;
-          final item = _items[index];
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(_items.length, (index) {
+              final isSelected = index == currentIndex;
+              final item = _items[index];
 
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => onTap?.call(index),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOutCubic,
-              padding: isSelected
-                  ? const EdgeInsets.symmetric(horizontal: 14, vertical: 8)
-                  : const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: isSelected
-                  ? BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xFFFB658D),
-                          Color(0xFFFB255A),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFB255A).withValues(alpha: 0.35),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    )
-                  : null,
-              child: isSelected
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          item.activeIcon,
-                          color: Colors.white,
-                          size: 19,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          item.label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w600,
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onTap?.call(index),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  padding: isSelected
+                      ? const EdgeInsets.symmetric(horizontal: 14, vertical: 8)
+                      : const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: isSelected
+                      ? const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Color(0xFFFB658D),
+                              Color(0xFFFB255A),
+                            ],
                           ),
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        )
+                      : const BoxDecoration(
+                          color: Colors.transparent,
                         ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          item.icon,
-                          color: const Color(0xFF64748B),
-                          size: 21,
+                  child: isSelected
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              item.activeIcon,
+                              color: Colors.white,
+                              size: 19,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              item.label,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              item.icon,
+                              color: const Color(0xFF151515),
+                              size: 20,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              item.label,
+                              style: const TextStyle(
+                                color: Color(0xFF151515),
+                                fontSize: 10,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          item.label,
-                          style: const TextStyle(
-                            color: Color(0xFF64748B),
-                            fontSize: 10,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          );
-        }),
+                ),
+              );
+            }),
+          ),
+        ),
       ),
     );
   }

@@ -60,73 +60,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // Scrollable Content
-          Positioned.fill(
-            child: SafeArea(
-              bottom: false,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final screenWidth = constraints.maxWidth;
-                  const designWidth = 440.0;
-                  const designHeight = 1960.0;
-                  final scale = screenWidth / designWidth;
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = constraints.maxWidth;
+            const designWidth = 440.0;
+            const designHeight = 1960.0;
+            final scale = screenWidth / designWidth;
 
-                  return SingleChildScrollView(
-                    controller: _scrollController,
-                    physics: const ClampingScrollPhysics(),
-                    child: Column(
+            return SingleChildScrollView(
+              controller: _scrollController,
+              physics: const ClampingScrollPhysics(),
+              child: SizedBox(
+                width: screenWidth,
+                height: designHeight * scale,
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.topCenter,
+                  child: SizedBox(
+                    width: designWidth,
+                    height: designHeight,
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        SizedBox(
-                          width: screenWidth,
-                          height: designHeight * scale,
-                          child: FittedBox(
-                            fit: BoxFit.fitWidth,
-                            alignment: Alignment.topCenter,
-                            child: const SizedBox(
-                              width: designWidth,
-                              height: designHeight,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  HomeProductFeed(),
-                                  HomeHeaderBar(),
-                                  HomeCategoryScrollGrid(),
-                                  HomePromotionBanner(),
-                                  HomeCategoryTabs(),
-                                  HomeNewUserPromoBar(),
-                                ],
-                              ),
-                            ),
-                          ),
+                        const HomeProductFeed(),
+                        const HomeHeaderBar(),
+                        const HomeCategoryScrollGrid(),
+                        const HomePromotionBanner(),
+                        const HomeCategoryTabs(),
+                        const HomeNewUserPromoBar(),
+                        HomeBottomNavBar(
+                          currentIndex: _currentIndex,
+                          onTap: _onTabTapped,
                         ),
-                        // Bottom spacing to prevent content from being covered by floating navbar
-                        const SizedBox(height: 90),
                       ],
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-
-          // Pinned Floating Bottom Navigation Bar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              top: false,
-              child: Center(
-                child: HomeBottomNavBar(
-                  currentIndex: _currentIndex,
-                  onTap: _onTabTapped,
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
