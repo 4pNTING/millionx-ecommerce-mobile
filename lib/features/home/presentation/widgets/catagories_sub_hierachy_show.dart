@@ -7,7 +7,7 @@ class CategoriesSubHierarchyShow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 440,
           height: 888,
           child: Stack(

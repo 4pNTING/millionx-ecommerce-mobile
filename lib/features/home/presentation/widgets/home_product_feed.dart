@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const double _promotionBannerGapAdjustment = 4.71;
+
 /// Product feed cards displayed on Home screen.
 class HomeProductFeed extends StatelessWidget {
   const HomeProductFeed({super.key, this.topOffset = 0});
@@ -10,7 +12,7 @@ class HomeProductFeed extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       left: 0,
-      top: topOffset,
+      top: topOffset + _promotionBannerGapAdjustment,
       child: SizedBox(
         width: 440,
         height: 1960,
@@ -18,10 +20,10 @@ class HomeProductFeed extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Positioned(
-              left: 222,
+              left: 222.45,
               top: 1106,
               child: Container(
-                width: 209,
+                width: 209.55,
                 height: 137.07,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -228,11 +230,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 222,
+              left: 222.45,
               top: 897,
               child: Container(
-                width: 209,
-                height: 209,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -245,11 +247,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 222,
+              left: 222.45,
               top: 897,
               child: Container(
-                width: 209,
-                height: 209,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
@@ -262,13 +264,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 431,
-              top: 1105.79,
+              left: 222.45,
+              top: 897,
               child: Container(
-                transform: Matrix4.translationValues(10.0, 20.0, 0.0)
-                  ..rotateZ(3.14),
-                width: 213.11,
-                height: 208.79,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/213x209.png"),
@@ -278,10 +278,10 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 222,
+              left: 222.45,
               top: 1461,
               child: Container(
-                width: 206,
+                width: 209.55,
                 height: 159.05,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -518,11 +518,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 222,
+              left: 222.45,
               top: 1255,
               child: Container(
-                width: 206,
-                height: 206,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: const Color(0xFFD9D9D9),
                   shape: RoundedRectangleBorder(
@@ -535,13 +535,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 428.96,
-              top: 1497.73,
+              left: 222,
+              top: 1255,
               child: Container(
-                transform: Matrix4.translationValues(10.0, 20.0, 0.0)
-                  ..rotateZ(3.14),
-                width: 208.63,
-                height: 278.18,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/209x278.png"),
@@ -551,10 +549,10 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 7.60,
+              left: 8,
               top: 1070.40,
               child: Container(
-                width: 210.40,
+                width: 209.55,
                 height: 155.60,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -761,11 +759,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 7.60,
+              left: 8,
               top: 860,
               child: Container(
-                width: 210.40,
-                height: 210.40,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: const Color(0xFFD9D9D9),
                   shape: RoundedRectangleBorder(
@@ -778,30 +776,14 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 2.71,
+              left: 7.60,
               top: 860,
               child: Container(
-                width: 217.26,
-                height: 214.31,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/217x214.png"),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 226.81,
-              top: 1079.39,
-              child: Container(
-                transform: Matrix4.translationValues(10.0, 20.0, 0.0)
-                  ..rotateZ(3.14),
-                width: 230.77,
-                height: 227.22,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage("https://placehold.co/231x227.png"),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -825,7 +807,7 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 221.45,
+              left: 222.45,
               top: 716.55,
               child: Container(
                 width: 209.55,
@@ -1084,36 +1066,6 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 439.77,
-              top: 725.50,
-              child: Container(
-                transform: Matrix4.translationValues(10.0, 20.0, 0.0)
-                  ..rotateZ(3.14),
-                width: 229.84,
-                height: 226.30,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage("https://placehold.co/230x226.png"),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 216.58,
-              top: 507,
-              child: Container(
-                width: 216.38,
-                height: 213.44,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage("https://placehold.co/216x213.png"),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
               left: 8,
               top: 716.55,
               child: Container(
@@ -1333,11 +1285,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 7,
+              left: 8,
               top: 507,
               child: Container(
-                width: 210.60,
-                height: 208,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/211x208.png"),
@@ -1347,10 +1299,10 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 223,
+              left: 222.45,
               top: 1841,
               child: Container(
-                width: 215,
+                width: 209.55,
                 height: 143,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -1517,11 +1469,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 223,
+              left: 222.45,
               top: 1626,
               child: Container(
-                width: 215,
-                height: 215,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: const Color(0xFFD9D9D9),
                   shape: RoundedRectangleBorder(
@@ -1534,11 +1486,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 221,
+              left: 223,
               top: 1626,
               child: Container(
-                width: 216,
-                height: 214,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/216x214.png"),
@@ -1548,10 +1500,10 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 6.49,
+              left: 8,
               top: 1815,
               child: Container(
-                width: 212,
+                width: 209.55,
                 height: 141,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -1764,11 +1716,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 6.49,
+              left: 8,
               top: 1603,
               child: Container(
-                width: 212,
-                height: 212,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: const Color(0xFFD9D9D9),
                   shape: RoundedRectangleBorder(
@@ -1781,11 +1733,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 4.52,
+              left: 6.49,
               top: 1603,
               child: Container(
-                width: 213.32,
-                height: 210.68,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/213x211.png"),
@@ -1795,10 +1747,10 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 6.59,
+              left: 8,
               top: 1446,
               child: Container(
-                width: 212,
+                width: 209.55,
                 height: 141,
                 decoration: ShapeDecoration(
                   color: Colors.white,
@@ -2029,11 +1981,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 6.59,
+              left: 8,
               top: 1234,
               child: Container(
-                width: 212,
-                height: 212,
+                width: 209.55,
+                height: 209.55,
                 decoration: ShapeDecoration(
                   color: const Color(0xFFD9D9D9),
                   shape: RoundedRectangleBorder(
@@ -2046,11 +1998,11 @@ class HomeProductFeed extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 4.62,
+              left: 6.59,
               top: 1234,
               child: Container(
-                width: 213.32,
-                height: 210.68,
+                width: 209.55,
+                height: 209.55,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage("https://placehold.co/213x211.png"),
