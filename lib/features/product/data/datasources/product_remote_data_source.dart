@@ -7,7 +7,7 @@ class ProductRemoteDataSource {
   const ProductRemoteDataSource(this._gateway);
   final GraphQlGateway _gateway;
   static const fields = '''
-    id name slug description brand
+    id name slug description brand categoryId
     variants { id sku name attributesJson isActive prices { id currency amount compareAtAmount isActive } }
     images { id variantId url altText sortOrder }
   ''';
@@ -33,7 +33,7 @@ class ProductRemoteDataSource {
     final page = data['products'] as Map<String, dynamic>;
     return PageResult(
       items: (page['items'] as List)
-          .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
+          .map<Product>((item) => ProductModel.fromJson(item as Map<String, dynamic>))
           .toList(),
       total: page['total'] as int,
       page: page['page'] as int,

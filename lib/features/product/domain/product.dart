@@ -5,6 +5,7 @@ class Product {
     required this.slug,
     this.description,
     this.brand,
+    this.categoryId,
     required this.variants,
     required this.images,
   });
@@ -13,6 +14,7 @@ class Product {
   final String slug;
   final String? description;
   final String? brand;
+  final String? categoryId;
   final List<ProductVariant> variants;
   final List<ProductImage> images;
   ProductPrice? get startingPrice {

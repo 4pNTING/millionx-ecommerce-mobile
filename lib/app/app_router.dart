@@ -5,6 +5,7 @@ import '../features/auth/presentation/auth_providers.dart';
 import '../features/auth/presentation/login_sign_up_screen.dart';
 import '../features/auth/presentation/onboarding_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
+import '../features/category/presentation/category_screen.dart';
 import '../features/customer/presentation/customer_account_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/product/presentation/product_detail_screen.dart';
@@ -12,7 +13,7 @@ import '../features/product/presentation/product_detail_screen.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.read(authControllerProvider);
   final router = GoRouter(
-    initialLocation: '/onboarding',
+    initialLocation: '/',
     refreshListenable: auth,
     redirect: (context, state) {
       final location = state.matchedLocation;
@@ -40,14 +41,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login-signup',
         builder: (context, state) => const LoginSignUpScreen(),
       ),
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/products/:id',
         builder: (context, state) =>
@@ -56,6 +51,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/categories',
+        builder: (context, state) => const CategoryScreen(),
       ),
       GoRoute(
         path: '/account',

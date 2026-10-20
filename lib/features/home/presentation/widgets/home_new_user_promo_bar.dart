@@ -7,9 +7,9 @@ class HomeNewUserPromoBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       left: 0,
-      top: 793,
+      top: 504,
       child: SizedBox(
-        width: 444,
+        width: 440,
         height: 57,
         child: Stack(
           children: [

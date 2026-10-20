@@ -8,6 +8,7 @@ class ProductModel extends Product {
     required super.slug,
     super.description,
     super.brand,
+    super.categoryId,
     required super.variants,
     required super.images,
   });
@@ -17,7 +18,8 @@ class ProductModel extends Product {
     slug: json['slug'] as String,
     description: json['description'] as String?,
     brand: json['brand'] as String?,
-    variants: (json['variants'] as List? ?? []).map((value) {
+    categoryId: json['categoryId'] as String?,
+    variants: (json['variants'] as List? ?? []).map<ProductVariant>((value) {
       final v = value as Map<String, dynamic>;
       final raw = v['attributesJson'] as String?;
       final attributes = raw == null || raw.isEmpty
@@ -43,7 +45,7 @@ class ProductModel extends Product {
         }).toList(),
       );
     }).toList(),
-    images: (json['images'] as List? ?? []).map((value) {
+    images: (json['images'] as List? ?? []).map<ProductImage>((value) {
       final i = value as Map<String, dynamic>;
       return ProductImage(
         id: i['id'] as String,

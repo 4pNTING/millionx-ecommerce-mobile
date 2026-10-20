@@ -1,4 +1,5 @@
 import '../../../../core/network/graphql_api_client.dart';
+import '../../domain/category.dart';
 import '../models/category_model.dart';
 
 class CategoryRemoteDataSource {
@@ -11,7 +12,7 @@ class CategoryRemoteDataSource {
       }
     }
   ''';
-  Future<List<CategoryModel>> getCategories() async {
+  Future<List<Category>> getCategories() async {
     final data = await _gateway.execute(
       document: document,
       variables: {
@@ -24,7 +25,7 @@ class CategoryRemoteDataSource {
     );
     final items = (data['categories'] as Map<String, dynamic>)['items'] as List;
     return items
-        .map((item) => CategoryModel.fromJson(item as Map<String, dynamic>))
+        .map<Category>((item) => CategoryModel.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 }

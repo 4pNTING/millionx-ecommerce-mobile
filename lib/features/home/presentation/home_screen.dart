@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../auth/presentation/auth_providers.dart';
+import '../../category/presentation/category_screen.dart';
+import '../../product/presentation/product_providers.dart';
 import 'widgets/home_bottom_nav_bar.dart';
 import 'widgets/home_category_scroll_grid.dart';
 import 'widgets/home_category_tabs.dart';
@@ -21,6 +23,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _currentIndex = 0;
+  String? _selectedCategoryId;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -42,6 +45,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
 
+    if (index == 1) {
+      // Category tab
+      setState(() => _currentIndex = 1);
+      return;
+    }
+
     if (index == 4) {
       // Profile / Account tab
       final auth = ref.read(authControllerProvider);
@@ -58,57 +67,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productsAsync = ref.watch(
+      productsProvider((keyword: '', categoryId: _selectedCategoryId, page: 1)),
+    );
+    final productCount = productsAsync.asData?.value.items.length ?? 6;
+    final rowCount = (productCount / 2).ceil();
+    final feedHeight = 80.0 + (rowCount == 0 ? 320.0 : rowCount * 280.0);
+    final designHeight = 570.0 + feedHeight + 60.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Scrollable Home Content
+          // If Category Tab (index 1) is selected, show CategoryScreen directly
           Positioned.fill(
-            child: SafeArea(
-              bottom: false,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final screenWidth = constraints.maxWidth;
-                  const designWidth = 440.0;
-                  const designHeight = 1960.0;
-                  final scale = screenWidth / designWidth;
+            child: _currentIndex == 1
+                ? CategoryScreen(
+                    onCategorySelected: (catId) {
+                      setState(() {
+                        _selectedCategoryId = catId;
+                        _currentIndex = 0;
+                      });
+                    },
+                  )
+                : SafeArea(
+                    bottom: false,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final screenWidth = constraints.maxWidth;
+                        const designWidth = 440.0;
+                        final scale = screenWidth / designWidth;
 
-                  return SingleChildScrollView(
-                    controller: _scrollController,
-                    physics: const ClampingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: screenWidth,
-                          height: designHeight * scale,
-                          child: FittedBox(
-                            fit: BoxFit.fitWidth,
-                            alignment: Alignment.topCenter,
-                            child: const SizedBox(
-                              width: designWidth,
-                              height: designHeight,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  HomeProductFeed(),
-                                  HomeHeaderBar(),
-                                  HomeCategoryScrollGrid(),
-                                  HomePromotionBanner(),
-                                  HomeCategoryTabs(),
-                                  HomeNewUserPromoBar(),
-                                ],
+                        return SingleChildScrollView(
+                          controller: _scrollController,
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: screenWidth,
+                                height: designHeight * scale,
+                                child: FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  alignment: Alignment.topCenter,
+                                  child: SizedBox(
+                                    width: designWidth,
+                                    height: designHeight,
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        HomeProductFeed(
+                                          selectedCategoryId: _selectedCategoryId,
+                                          onClearCategory: () {
+                                            setState(() => _selectedCategoryId = null);
+                                          },
+                                        ),
+                                        const HomeHeaderBar(),
+                                        HomeCategoryScrollGrid(
+                                          selectedCategoryId: _selectedCategoryId,
+                                          onCategorySelected: (id) {
+                                            setState(() => _selectedCategoryId = id);
+                                          },
+                                        ),
+                                        const HomePromotionBanner(),
+                                        HomeCategoryTabs(
+                                          selectedCategoryId: _selectedCategoryId,
+                                          onCategorySelected: (id) {
+                                            setState(() => _selectedCategoryId = id);
+                                          },
+                                        ),
+                                        const HomeNewUserPromoBar(),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              // Bottom spacing to ensure content is not covered by the floating navbar
+                              const SizedBox(height: 90),
+                            ],
                           ),
-                        ),
-                        // Bottom spacing to ensure content is not covered by the floating navbar
-                        const SizedBox(height: 90),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ),
 
           // Pinned Floating Bottom Navigation Bar

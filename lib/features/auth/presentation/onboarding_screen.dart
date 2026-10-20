@@ -18,9 +18,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _timer = Timer(const Duration(milliseconds: 1500), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginSignUpScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginSignUpScreen()),
         );
       }
     });
@@ -31,10 +29,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _timer?.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: const Color(0xFFF43F5E),
       body: SafeArea(

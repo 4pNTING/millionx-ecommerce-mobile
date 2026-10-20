@@ -6,5 +6,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
   const CategoryRepositoryImpl(this._remote);
   final CategoryRemoteDataSource _remote;
   @override
-  Future<List<Category>> getCategories() => _remote.getCategories();
+  Future<List<Category>> getCategories() async {
+    final list = await _remote.getCategories();
+    return List<Category>.from(list);
+  }
 }
