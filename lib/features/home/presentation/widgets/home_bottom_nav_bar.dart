@@ -76,72 +76,84 @@ class HomeBottomNavBar extends StatelessWidget {
           final isSelected = index == currentIndex;
           final item = _items[index];
 
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => onTap?.call(index),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              padding: isSelected
-                  ? const EdgeInsets.symmetric(horizontal: 14, vertical: 8)
-                  : const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: isSelected
-                  ? const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xFFFB658D),
-                          Color(0xFFFB255A),
-                        ],
+          return Flexible(
+            flex: isSelected ? 3 : 2,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onTap?.call(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                padding: isSelected
+                    ? const EdgeInsets.symmetric(horizontal: 10, vertical: 8)
+                    : const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                decoration: isSelected
+                    ? const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Color(0xFFFB658D),
+                            Color(0xFFFB255A),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      )
+                    : const BoxDecoration(
+                        color: Colors.transparent,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    )
-                  : const BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-              child: isSelected
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          item.activeIcon,
-                          color: Colors.white,
-                          size: 19,
+                child: Center(
+                  child: isSelected
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              item.activeIcon,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                item.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              item.icon,
+                              color: const Color(0xFF151515),
+                              size: 20,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              item.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFF151515),
+                                fontSize: 10,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 5),
-                        Text(
-                          item.label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          item.icon,
-                          color: const Color(0xFF151515),
-                          size: 20,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          item.label,
-                          style: const TextStyle(
-                            color: Color(0xFF151515),
-                            fontSize: 10,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+              ),
             ),
           );
         }),

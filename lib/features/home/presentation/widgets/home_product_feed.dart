@@ -67,49 +67,55 @@ class HomeProductFeed extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 18,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFFB658D), Color(0xFFFB255A)],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 4,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFB658D), Color(0xFFFB255A)],
+                                ),
+                                borderRadius: BorderRadius.circular(2),
                               ),
-                              borderRadius: BorderRadius.circular(2),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            categoryName != null
-                                ? 'ໝວດໝູ່: $categoryName'
-                                : 'ສິນຄ້າແນະນຳ',
-                            style: const TextStyle(
-                              color: Color(0xFF0F172A),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Inter',
-                              fontFamilyFallback: _fontFallback,
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                categoryName != null
+                                    ? 'ໝວດໝູ່: $categoryName'
+                                    : 'ສິນຄ້າແນະນຳ',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Color(0xFF0F172A),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Inter',
+                                  fontFamilyFallback: _fontFallback,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        categoryName != null
-                            ? 'ສະແດງສິນຄ້າໃນໝວດນີ້'
-                            : 'ສິນຄ້າຍອດນິຍົມ ຄຸນນະພາບດີ ລາຄາພິເສດ',
-                        style: const TextStyle(
-                          color: Color(0xFF64748B),
-                          fontSize: 12,
-                          fontFamily: 'Inter',
-                          fontFamilyFallback: _fontFallback,
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 2),
+                        Text(
+                          categoryName != null
+                              ? 'ສະແດງສິນຄ້າໃນໝວດນີ້'
+                              : 'ສິນຄ້າຍອດນິຍົມ ຄຸນນະພາບດີ ລາຄາພິເສດ',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontFamilyFallback: _fontFallback,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   // Clear filter badge if filtered

@@ -31,10 +31,7 @@ class HomeHeaderBar extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: ShapeDecoration(
-            image: DecorationImage(
-              image: NetworkImage("https://placehold.co/42x42.png"),
-              fit: BoxFit.fill,
-            ),
+            color: Colors.transparent,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           ),
         ),

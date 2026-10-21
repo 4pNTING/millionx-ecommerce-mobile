@@ -54,39 +54,44 @@ class HomePromotionBanner extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFFB658D), Color(0xFFFB255A)],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFB658D), Color(0xFFFB255A)],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'ດີລພິເສດ',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Inter',
-                            fontFamilyFallback: _fontFallback,
+                          child: const Text(
+                            'ດີລພິເສດ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
+                              fontFamilyFallback: _fontFallback,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'ຫຼຸດລາຄາພິເສດມື້ນີ້',
-                        style: TextStyle(
-                          color: Color(0xFF881337),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Inter',
-                          fontFamilyFallback: _fontFallback,
+                        const SizedBox(width: 8),
+                        const Flexible(
+                          child: Text(
+                            'ຫຼຸດລາຄາພິເສດມື້ນີ້',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xFF881337),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Inter',
+                              fontFamilyFallback: _fontFallback,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const Text(
                     'ເບິ່ງເພີ່ມ >',
