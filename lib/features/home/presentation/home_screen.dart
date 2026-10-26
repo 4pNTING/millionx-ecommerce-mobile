@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../auth/presentation/auth_controller.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../category/presentation/category_screen.dart';
 import '../../product/presentation/product_providers.dart';
@@ -24,6 +25,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _currentIndex = 0;
   String? _selectedCategoryId;
+  String _keyword = '';
+  int _currentPage = 1;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -68,11 +71,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(
-      productsProvider((keyword: '', categoryId: _selectedCategoryId, page: 1)),
+      productsProvider((
+        keyword: _keyword,
+        categoryId: _selectedCategoryId,
+        page: _currentPage,
+      )),
     );
     final productCount = productsAsync.asData?.value.items.length ?? 6;
     final rowCount = (productCount / 2).ceil();
-    final feedHeight = 80.0 + (rowCount == 0 ? 320.0 : rowCount * 280.0);
+    final feedHeight = 80.0 + (rowCount == 0 ? 320.0 : rowCount * 280.0) + 70.0;
     final designHeight = 570.0 + feedHeight + 60.0;
 
     return Scaffold(
@@ -86,6 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onCategorySelected: (catId) {
                       setState(() {
                         _selectedCategoryId = catId;
+                        _currentPage = 1;
                         _currentIndex = 0;
                       });
                     },
@@ -117,25 +125,67 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       children: [
                                         HomeProductFeed(
                                           selectedCategoryId: _selectedCategoryId,
+                                          keyword: _keyword,
+                                          currentPage: _currentPage,
+                                          onPageChanged: (newPage) {
+                                            setState(() => _currentPage = newPage);
+                                            if (_scrollController.hasClients) {
+                                              _scrollController.animateTo(
+                                                540,
+                                                duration: const Duration(milliseconds: 300),
+                                                curve: Curves.easeOut,
+                                              );
+                                            }
+                                          },
                                           onClearCategory: () {
-                                            setState(() => _selectedCategoryId = null);
+                                            setState(() {
+                                              _selectedCategoryId = null;
+                                              _currentPage = 1;
+                                            });
                                           },
                                         ),
-                                        const HomeHeaderBar(),
+                                        HomeHeaderBar(
+                                          initialKeyword: _keyword,
+                                          onSearchChanged: (value) {
+                                            setState(() {
+                                              _keyword = value.trim();
+                                              _currentPage = 1;
+                                            });
+                                          },
+                                          onSearchSubmitted: (value) {
+                                            setState(() {
+                                              _keyword = value.trim();
+                                              _currentPage = 1;
+                                            });
+                                          },
+                                        ),
                                         HomeCategoryScrollGrid(
                                           selectedCategoryId: _selectedCategoryId,
                                           onCategorySelected: (id) {
-                                            setState(() => _selectedCategoryId = id);
+                                            setState(() {
+                                              _selectedCategoryId = id;
+                                              _currentPage = 1;
+                                            });
                                           },
                                         ),
                                         const HomePromotionBanner(),
                                         HomeCategoryTabs(
                                           selectedCategoryId: _selectedCategoryId,
                                           onCategorySelected: (id) {
-                                            setState(() => _selectedCategoryId = id);
+                                            setState(() {
+                                              _selectedCategoryId = id;
+                                              _currentPage = 1;
+                                            });
                                           },
                                         ),
-                                        const HomeNewUserPromoBar(),
+                                        Positioned(
+                                          left: 0,
+                                          top: 504,
+                                          width: 440,
+                                          child: HomeNewUserPromoBar(
+                                            onTap: () => context.push('/login'),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -151,21 +201,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
           ),
 
-          // Pinned Floating Bottom Navigation Bar
+          // Pinned Floating Bottom Navigation Bar with New User Promo
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
             child: SafeArea(
               top: false,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Center(
-                  child: HomeBottomNavBar(
-                    currentIndex: _currentIndex,
-                    onTap: _onTabTapped,
-                  ),
-                ),
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final authStatus = ref.watch(authControllerProvider).status;
+                  final showNewUserPromo =
+                      authStatus == AuthStatus.signedOut ||
+                      authStatus == AuthStatus.restoreFailed;
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showNewUserPromo)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 8,
+                            right: 8,
+                            bottom: 8,
+                          ),
+                          child: HomeNewUserPromoBar(
+                            onTap: () => context.push('/login'),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Center(
+                          child: HomeBottomNavBar(
+                            currentIndex: _currentIndex,
+                            onTap: _onTabTapped,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),

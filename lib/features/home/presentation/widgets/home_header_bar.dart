@@ -1,8 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 /// Top header section (logo, location, search bar, campaign bar) on Home screen.
-class HomeHeaderBar extends StatelessWidget {
-  const HomeHeaderBar({super.key});
+class HomeHeaderBar extends StatefulWidget {
+  const HomeHeaderBar({
+    super.key,
+    this.initialKeyword = '',
+    this.onSearchChanged,
+    this.onSearchSubmitted,
+  });
+
+  final String initialKeyword;
+  final ValueChanged<String>? onSearchChanged;
+  final ValueChanged<String>? onSearchSubmitted;
+
+  @override
+  State<HomeHeaderBar> createState() => _HomeHeaderBarState();
+}
+
+class _HomeHeaderBarState extends State<HomeHeaderBar> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialKeyword);
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeHeaderBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialKeyword != _controller.text) {
+      _controller.text = widget.initialKeyword;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  static const _fontFallback = ['NotoSansLao', 'NotoSansLaoLooped'];
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +61,7 @@ class HomeHeaderBar extends StatelessWidget {
         child: Container(
           width: 440,
           height: 127,
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: const BoxDecoration(color: Colors.white),
         ),
       ),
       Positioned(
@@ -39,10 +79,10 @@ class HomeHeaderBar extends StatelessWidget {
       Positioned(
         left: 56,
         top: 59,
-        child: Text(
+        child: const Text(
           'COOBO',
           style: TextStyle(
-            color: const Color(0xFFF43F5E),
+            color: Color(0xFFF43F5E),
             fontSize: 24,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w800,
@@ -50,21 +90,21 @@ class HomeHeaderBar extends StatelessWidget {
         ),
       ),
       Positioned(
-  left: 16,
-  top: 45,
-  child: Image.asset('assets/icons/toy.png', height: 32),
-),
+        left: 16,
+        top: 45,
+        child: Image.asset('assets/icons/toy.png', height: 32),
+      ),
       Positioned(
         left: 355,
         top: 72.50,
         child: Container(
           width: 6,
           height: 6,
-          decoration: ShapeDecoration(
+          decoration: const ShapeDecoration(
             shape: OvalBorder(
               side: BorderSide(
                 width: 1,
-                color: const Color(0xFF151515),
+                color: Color(0xFF151515),
               ),
             ),
           ),
@@ -73,72 +113,91 @@ class HomeHeaderBar extends StatelessWidget {
       Positioned(
         left: 370,
         top: 64,
-        child: Text(
+        child: const Text(
           'ວຽງຈັນ',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontFamily: 'Inter',
+            fontFamilyFallback: _fontFallback,
             fontWeight: FontWeight.w400,
           ),
         ),
       ),
       Positioned(
         left: 8,
-        top: 101,
+        top: 96,
         child: Container(
           width: 424,
-          height: 32,
-          decoration: ShapeDecoration(
+          height: 38,
+          decoration: BoxDecoration(
             color: Colors.white,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                width: 2,
-                strokeAlign: BorderSide.strokeAlignOutside,
-                color: const Color(0xFF6D9CE6),
+            borderRadius: BorderRadius.circular(21.50),
+            border: Border.all(
+              color: const Color(0xFF6D9CE6),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  final currentPath = GoRouter.of(context).state.uri.path;
+                  if (currentPath != '/search') {
+                    context.push('/search');
+                  }
+                },
+                child: SvgPicture.asset(
+                  'assets/icons/search_icon.svg',
+                  width: 20,
+                  height: 20,
+                ),
               ),
-              borderRadius: BorderRadius.circular(21.50),
-            ),
-          ),
-        ),
-      ),
-      Positioned(
-        left: 171.05,
-        top: 109,
-        child: Container(
-          width: 12.71,
-          height: 12.47,
-          decoration: ShapeDecoration(
-            shape: OvalBorder(
-              side: BorderSide(
-                width: 2,
-                strokeAlign: BorderSide.strokeAlignOutside,
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  textInputAction: TextInputAction.search,
+                  onChanged: widget.onSearchChanged,
+                  onSubmitted: widget.onSearchSubmitted,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Inter',
+                    fontFamilyFallback: _fontFallback,
+                  ),
+                  decoration: const InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                    hintText: 'ຄົ້ນຫາສິນຄ້າ...',
+                    hintStyle: TextStyle(
+                      color: Color(0xFF939393),
+                      fontSize: 14,
+                      fontFamily: 'Inter',
+                      fontFamilyFallback: _fontFallback,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                ),
               ),
-            ),
+              if (_controller.text.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    _controller.clear();
+                    widget.onSearchChanged?.call('');
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
-      Positioned(
-        left: 194.52,
-        top: 104,
-        child: SizedBox(
-          width: 42.81,
-          child: Text(
-            'ຄົ້ນຫາ',
-            style: TextStyle(
-              color: const Color(0xFF939393),
-              fontSize: 18,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      ),
-      Positioned(
-  left: 180,
-  top: 88,
-  child: Image.asset('assets/icons/toy.png', width: 20, height: 20),
-),
       Positioned(
         left: 7,
         top: 191,

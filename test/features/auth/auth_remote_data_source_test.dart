@@ -15,7 +15,7 @@ void main() {
         password: 'test-only',
       ),
     );
-    expect(gateway.document, contains('RegisterCustomerInput!'));
+    expect(gateway.document, contains('RegisterCustomerDto!'));
     final input = gateway.variables!['input'] as Map;
     expect(input['email'], 'customer@example.com');
     expect(input.containsKey('phone'), false);
@@ -31,7 +31,7 @@ void main() {
     );
 
     expect(gateway.document, contains('loginCustomer(input: \$input)'));
-    expect(gateway.document, contains('CustomerLoginInput!'));
+    expect(gateway.document, contains('CustomerLoginDto!'));
     expect(gateway.variables, {
       'input': {
         'identifier': 'customer@example.com',
@@ -63,7 +63,7 @@ void main() {
     );
 
     expect(gateway.document, contains('socialLoginCustomer(input: \$input)'));
-    expect(gateway.document, contains('SocialLoginCustomerInput!'));
+    expect(gateway.document, contains('SocialLoginCustomerDto!'));
     expect(gateway.variables, {
       'input': {
         'provider': 'GOOGLE',
@@ -83,7 +83,7 @@ void main() {
     );
 
     expect(gateway.document, contains('socialLoginCustomer(input: \$input)'));
-    expect(gateway.document, contains('SocialLoginCustomerInput!'));
+    expect(gateway.document, contains('SocialLoginCustomerDto!'));
     expect(gateway.variables, {
       'input': {
         'provider': 'FACEBOOK',

@@ -8,7 +8,7 @@ class CategoryModel extends Category {
     super.parentId,
   });
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
-    id: json['id'] as String,
+    id: (json['_id'] ?? json['id']) as String,
     name: json['name'] as String,
     slug: json['slug'] as String,
     parentId: json['parentId'] as String?,

@@ -7,26 +7,28 @@ class ProductRemoteDataSource {
   const ProductRemoteDataSource(this._gateway);
   final GraphQlGateway _gateway;
   static const fields = '''
-    id name slug description brand categoryId
-    variants { id sku name attributesJson isActive prices { id currency amount compareAtAmount isActive } }
-    images { id variantId url altText sortOrder }
+    _id name slug description brand categoryId
+    variants { _id sku name attributesJson isActive prices { _id currency amount compareAtAmount isActive } }
+    images { _id variantId url altText sortOrder }
   ''';
   static const listDocument =
-      'query StoreProducts(\$filter: ProductFilterInput) { products(filter: \$filter) { total page limit items { $fields } } }';
+      'query StoreProducts(\$input: LoadProductDto) { products(input: \$input) { total page limit items { $fields } } }';
   static const detailDocument =
-      'query StoreProduct(\$id: String, \$currency: String) { product(id: \$id, currency: \$currency) { $fields } }';
+      'query StoreProduct(\$_id: String, \$slug: String, \$currency: String) { product(_id: \$_id, slug: \$slug, currency: \$currency) { $fields } }';
 
   Future<PageResult<Product>> getProducts(ProductFilter filter) async {
     final data = await _gateway.execute(
       document: listDocument,
       variables: {
-        'filter': {
-          'keyword': filter.keyword,
-          if (filter.categoryId != null) 'categoryId': filter.categoryId,
+        'input': {
+          if (filter.keyword.trim().isNotEmpty) 'keyword': filter.keyword.trim(),
+          if (filter.categoryId != null && filter.categoryId!.isNotEmpty)
+            'categoryId': filter.categoryId,
+          'includeDescendants': true,
           'currency': 'LAK',
           'page': filter.page,
           'limit': 12,
-          'includeInactive': false,
+          'isActive': 'active',
         },
       },
     );
@@ -44,7 +46,7 @@ class ProductRemoteDataSource {
   Future<Product> getProduct(String id) async {
     final data = await _gateway.execute(
       document: detailDocument,
-      variables: {'id': id, 'currency': 'LAK'},
+      variables: {'_id': id, 'currency': 'LAK'},
     );
     return ProductModel.fromJson(data['product'] as Map<String, dynamic>);
   }

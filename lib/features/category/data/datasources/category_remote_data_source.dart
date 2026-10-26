@@ -6,9 +6,9 @@ class CategoryRemoteDataSource {
   const CategoryRemoteDataSource(this._gateway);
   final GraphQlGateway _gateway;
   static const document = r'''
-    query StoreCategories($filter: CategoryFilterInput) {
-      categories(filter: $filter) {
-        items { id parentId name slug } total page limit
+    query StoreCategories($input: LoadCategoryDto) {
+      categories(input: $input) {
+        items { _id parentId name slug } total page limit
       }
     }
   ''';
@@ -16,9 +16,9 @@ class CategoryRemoteDataSource {
     final data = await _gateway.execute(
       document: document,
       variables: {
-        'filter': {
+        'input': {
           'fetchAll': true,
-          'includeInactive': false,
+          'isActive': 'active',
           'rootOnly': false,
         },
       },

@@ -34,10 +34,16 @@ class GraphQlApiClient implements GraphQlGateway {
     Map<String, dynamic> variables = const {},
     String? accessToken,
   }) async {
-    final candidateEndpoints = [
-      _activeEndpoint,
-      ...fallbackEndpoints.where((url) => url != _activeEndpoint),
-    ];
+    final isMutation =
+        RegExp(r'^\s*mutation\b', caseSensitive: false).hasMatch(document);
+
+    // Mutations are non-idempotent and must not be automatically replayed on fallback endpoints
+    final candidateEndpoints = isMutation
+        ? [_activeEndpoint]
+        : [
+            _activeEndpoint,
+            ...fallbackEndpoints.where((url) => url != _activeEndpoint),
+          ];
 
     for (var i = 0; i < candidateEndpoints.length; i++) {
       final endpoint = candidateEndpoints[i];
@@ -78,19 +84,38 @@ class GraphQlApiClient implements GraphQlGateway {
       } on GraphQlApiException {
         rethrow;
       } on DioException catch (error) {
-        final body = error.response?.data;
-        if (body is Map && body['message'] != null) {
-          throw GraphQlApiException(body['message'].toString());
+        // If the server returned an HTTP response, it is an HTTP error rather than a connection failure
+        if (error.response != null) {
+          final response = error.response!;
+          final statusCode = response.statusCode ?? 500;
+          final body = response.data;
+          String? message;
+
+          if (body is Map) {
+            if (body['message'] != null) {
+              message = body['message'].toString();
+            } else if (body['errors'] is List && (body['errors'] as List).isNotEmpty) {
+              final first = (body['errors'] as List).first;
+              if (first is Map && first['message'] != null) {
+                message = first['message'].toString();
+              }
+            }
+          }
+
+          throw GraphQlHttpException(
+            statusCode,
+            message ?? 'HTTP $statusCode error from MillionX server',
+          );
         }
 
-        // If the server responded with an HTTP status code, the server was reached.
-        if (error.response != null) {
+        // Mutations must never be retried on another endpoint upon network timeout/failure
+        if (isMutation) {
           throw const GraphQlConnectionException(
             'Cannot connect to MillionX. Check the backend and network.',
           );
         }
 
-        // Connection timeout or network failure: try next fallback endpoint if available
+        // Connection timeout or network failure on query: try next fallback endpoint if available
         continue;
       }
     }
@@ -107,6 +132,14 @@ class GraphQlApiException implements Exception {
 
   @override
   String toString() => message;
+}
+
+class GraphQlHttpException extends GraphQlApiException {
+  const GraphQlHttpException(this.statusCode, super.message);
+  final int statusCode;
+
+  @override
+  String toString() => 'HTTP $statusCode: $message';
 }
 
 class GraphQlConnectionException implements Exception {

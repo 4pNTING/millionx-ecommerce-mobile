@@ -48,19 +48,22 @@ class _HomeCategoryTabsState extends ConsumerState<HomeCategoryTabs> {
         height: 42,
         child: categoriesAsync.when(
           data: (categories) {
-            // Deduplicate categories by name and keep clean list
+            // Deduplicate categories by id
             final uniqueCategories = <Category>[];
-            final seenNames = <String>{};
+            final seenIds = <String>{};
             for (final c in categories) {
-              final trimmed = c.name.trim();
-              if (trimmed.isNotEmpty && seenNames.add(trimmed)) {
+              final lower = '${c.name} ${c.slug}'.toLowerCase();
+              if (lower.contains('test') || lower.contains('ທົດສອບ')) continue;
+              if (c.name.trim().isNotEmpty && seenIds.add(c.id)) {
                 uniqueCategories.add(c);
               }
             }
 
             final items = [
               (id: null, name: 'ທັງໝົດ'),
-              ...uniqueCategories.map((c) => (id: c.id as String?, name: c.name)),
+              ...uniqueCategories.map(
+                (c) => (id: c.id as String?, name: c.name),
+              ),
             ];
 
             return ListView.separated(
@@ -92,9 +95,13 @@ class _HomeCategoryTabsState extends ConsumerState<HomeCategoryTabs> {
                               : const Color(0xFF151515),
                           fontSize: isSelected ? 21 : 19,
                           fontFamily: 'Inter',
-                          fontFamilyFallback: const ['Noto Sans Lao', 'sans-serif'],
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.w400,
+                          fontFamilyFallback: const [
+                            'Noto Sans Lao',
+                            'sans-serif',
+                          ],
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 3),

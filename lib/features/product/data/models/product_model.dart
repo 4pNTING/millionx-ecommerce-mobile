@@ -13,7 +13,7 @@ class ProductModel extends Product {
     required super.images,
   });
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-    id: json['id'] as String,
+    id: (json['_id'] ?? json['id']) as String,
     name: json['name'] as String,
     slug: json['slug'] as String,
     description: json['description'] as String?,
@@ -26,7 +26,7 @@ class ProductModel extends Product {
           ? <String, dynamic>{}
           : jsonDecode(raw) as Map<String, dynamic>;
       return ProductVariant(
-        id: v['id'] as String,
+        id: (v['_id'] ?? v['id']) as String,
         sku: v['sku'] as String,
         name: v['name'] as String?,
         isActive: v['isActive'] == true,
@@ -36,7 +36,7 @@ class ProductModel extends Product {
         prices: (v['prices'] as List? ?? []).map((value) {
           final p = value as Map<String, dynamic>;
           return ProductPrice(
-            id: p['id'] as String,
+            id: (p['_id'] ?? p['id']) as String,
             currency: p['currency'] as String,
             amount: (p['amount'] as num).toDouble(),
             compareAtAmount: (p['compareAtAmount'] as num?)?.toDouble(),
@@ -48,7 +48,7 @@ class ProductModel extends Product {
     images: (json['images'] as List? ?? []).map<ProductImage>((value) {
       final i = value as Map<String, dynamic>;
       return ProductImage(
-        id: i['id'] as String,
+        id: (i['_id'] ?? i['id']) as String,
         url: i['url'] as String,
         variantId: i['variantId'] as String?,
         altText: i['altText'] as String?,

@@ -12,11 +12,17 @@ class HomeProductFeed extends ConsumerWidget {
   const HomeProductFeed({
     super.key,
     this.selectedCategoryId,
+    this.keyword = '',
+    this.currentPage = 1,
     this.onClearCategory,
+    this.onPageChanged,
   });
 
   final String? selectedCategoryId;
+  final String keyword;
+  final int currentPage;
   final VoidCallback? onClearCategory;
+  final ValueChanged<int>? onPageChanged;
 
   static const _fontFallback = ['Noto Sans Lao', 'Noto Sans', 'sans-serif'];
 
@@ -34,9 +40,12 @@ class HomeProductFeed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productsAsync = ref.watch(
-      productsProvider((keyword: '', categoryId: selectedCategoryId, page: 1)),
+    final activeFilter = (
+      keyword: keyword,
+      categoryId: selectedCategoryId,
+      page: currentPage,
     );
+    final productsAsync = ref.watch(productsProvider(activeFilter));
     final categoriesAsync = ref.watch(categoriesProvider);
 
     // Resolve selected category name if applicable
@@ -224,20 +233,67 @@ class HomeProductFeed extends ConsumerWidget {
                     );
                   }
 
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.68,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final product = items[index];
-                      return _buildProductCard(context, product);
-                    },
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.68,
+                        ),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final product = items[index];
+                          return _buildProductCard(context, product);
+                        },
+                      ),
+                      if (pageResult.pageCount > 1) ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            OutlinedButton.icon(
+                              onPressed: currentPage > 1
+                                  ? () => onPageChanged?.call(currentPage - 1)
+                                  : null,
+                              icon: const Icon(Icons.chevron_left_rounded, size: 18),
+                              label: const Text('ກ່ອນໜ້າ'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF0F172A),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              child: Text(
+                                'ໜ້າ $currentPage / ${pageResult.pageCount}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF475569),
+                                  fontFamilyFallback: _fontFallback,
+                                ),
+                              ),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: currentPage < pageResult.pageCount
+                                  ? () => onPageChanged?.call(currentPage + 1)
+                                  : null,
+                              icon: const Icon(Icons.chevron_right_rounded, size: 18),
+                              label: const Text('ຕໍ່ໄປ'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF0F172A),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
                   );
                 },
                 loading: () => GridView.builder(
@@ -273,7 +329,7 @@ class HomeProductFeed extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton(
-                        onPressed: () => ref.invalidate(productsProvider),
+                        onPressed: () => ref.invalidate(productsProvider(activeFilter)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFF43F5E),
                           foregroundColor: Colors.white,

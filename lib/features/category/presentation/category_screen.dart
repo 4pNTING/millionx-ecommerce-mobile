@@ -163,10 +163,16 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             );
           }
 
+          // Exclude test / placeholder categories
+          final realCategories = categories.where((c) {
+            final lower = '${c.name} ${c.slug}'.toLowerCase();
+            return !lower.contains('test') && !lower.contains('ທົດສອບ');
+          }).toList();
+
           // Filter by search query if user typed
           final filtered = _searchQuery.isEmpty
-              ? categories
-              : categories
+              ? realCategories
+              : realCategories
                   .where(
                     (c) =>
                         c.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -298,18 +304,19 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       );
                     }
 
-                    // Find all subcategories where parentId matches selected root (direct or nested)
-                    final directSubs = categories
-                        .where((c) => c.parentId == selectedRoot!.id)
-                        .toList();
+                    // Collect all descendant subcategories at any depth with cycle protection
+                    final allSubs = <Category>[];
+                    final visitedIds = <String>{selectedRoot.id};
+                    final queue = <String>[selectedRoot.id];
 
-                    // Collect any grandchildren subcategories
-                    final allSubs = <Category>[...directSubs];
-                    for (final sub in directSubs) {
-                      final children = categories
-                          .where((c) => c.parentId == sub.id)
-                          .toList();
-                      allSubs.addAll(children);
+                    while (queue.isNotEmpty) {
+                      final currentId = queue.removeAt(0);
+                      for (final c in categories) {
+                        if (c.parentId == currentId && visitedIds.add(c.id)) {
+                          allSubs.add(c);
+                          queue.add(c.id);
+                        }
+                      }
                     }
 
                     return ListView(

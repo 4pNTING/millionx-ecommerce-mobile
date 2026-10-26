@@ -8,6 +8,8 @@ import '../features/auth/presentation/register_screen.dart';
 import '../features/category/presentation/category_screen.dart';
 import '../features/customer/presentation/customer_account_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/home/presentation/search_result_screen.dart';
+import '../features/home/presentation/search_screen.dart';
 import '../features/product/presentation/product_detail_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -43,6 +45,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        name: 'search-results',
+        path: '/search-results',
+        builder: (context, state) => SearchResultScreen(
+          query: state.uri.queryParameters['q'] ?? '',
+        ),
+      ),
       GoRoute(
         path: '/products/:id',
         builder: (context, state) =>

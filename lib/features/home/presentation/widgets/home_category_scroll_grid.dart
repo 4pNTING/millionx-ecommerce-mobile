@@ -17,39 +17,86 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
 
   static const _fontFallback = ['Noto Sans Lao', 'Noto Sans', 'sans-serif'];
 
-  static (IconData, Color, Color) _getCategoryVisuals(String slug, String name) {
+  static (IconData, Color, Color) _getCategoryVisuals(
+    String slug,
+    String name,
+  ) {
     final lower = '${slug.toLowerCase()} ${name.toLowerCase()}';
     if (lower.contains('electron') || lower.contains('ເອເລັກໂຕຣນິກ')) {
-      return (Icons.devices_rounded, const Color(0xFFEFF6FF), const Color(0xFF2563EB));
+      return (
+        Icons.devices_rounded,
+        const Color(0xFFEFF6FF),
+        const Color(0xFF2563EB),
+      );
     }
     if (lower.contains('fashion') || lower.contains('ແຟຊັ່ນ')) {
-      return (Icons.checkroom_rounded, const Color(0xFFFDF2F8), const Color(0xFFDB2777));
+      return (
+        Icons.checkroom_rounded,
+        const Color(0xFFFDF2F8),
+        const Color(0xFFDB2777),
+      );
     }
     if (lower.contains('computer') || lower.contains('ຄອມພິວເຕີ')) {
-      return (Icons.computer_rounded, const Color(0xFFF5F3FF), const Color(0xFF7C3AED));
+      return (
+        Icons.computer_rounded,
+        const Color(0xFFF5F3FF),
+        const Color(0xFF7C3AED),
+      );
     }
     if (lower.contains('laptop') || lower.contains('ແລັບທັອບ')) {
-      return (Icons.laptop_mac_rounded, const Color(0xFFF0FDFA), const Color(0xFF0D9488));
+      return (
+        Icons.laptop_mac_rounded,
+        const Color(0xFFF0FDFA),
+        const Color(0xFF0D9488),
+      );
     }
     if (lower.contains('phone') || lower.contains('ໂທລະສັບ')) {
-      return (Icons.phone_iphone_rounded, const Color(0xFFECFDF5), const Color(0xFF059669));
+      return (
+        Icons.phone_iphone_rounded,
+        const Color(0xFFECFDF5),
+        const Color(0xFF059669),
+      );
     }
     if (lower.contains('headphone') || lower.contains('ຫູຟັງ')) {
-      return (Icons.headphones_rounded, const Color(0xFFFFFBEB), const Color(0xFFD97706));
+      return (
+        Icons.headphones_rounded,
+        const Color(0xFFFFFBEB),
+        const Color(0xFFD97706),
+      );
     }
     if (lower.contains('men') || lower.contains('ຜູ້ຊາຍ')) {
-      return (Icons.person_rounded, const Color(0xFFEEF2FF), const Color(0xFF4F46E5));
+      return (
+        Icons.person_rounded,
+        const Color(0xFFEEF2FF),
+        const Color(0xFF4F46E5),
+      );
     }
     if (lower.contains('women') || lower.contains('ຜູ້ຍິງ')) {
-      return (Icons.woman_rounded, const Color(0xFFFFF1F2), const Color(0xFFE11D48));
+      return (
+        Icons.woman_rounded,
+        const Color(0xFFFFF1F2),
+        const Color(0xFFE11D48),
+      );
     }
     if (lower.contains('shoe') || lower.contains('ເກີບ')) {
-      return (Icons.roller_skating_rounded, const Color(0xFFFFF7ED), const Color(0xFFEA580C));
+      return (
+        Icons.roller_skating_rounded,
+        const Color(0xFFFFF7ED),
+        const Color(0xFFEA580C),
+      );
     }
     if (lower.contains('appliance') || lower.contains('ເຄື່ອງໃຊ້ໄຟຟ້າ')) {
-      return (Icons.kitchen_rounded, const Color(0xFFF0FDF4), const Color(0xFF16A34A));
+      return (
+        Icons.kitchen_rounded,
+        const Color(0xFFF0FDF4),
+        const Color(0xFF16A34A),
+      );
     }
-    return (Icons.category_rounded, const Color(0xFFF8FAFC), const Color(0xFF64748B));
+    return (
+      Icons.category_rounded,
+      const Color(0xFFF8FAFC),
+      const Color(0xFF64748B),
+    );
   }
 
   @override
@@ -65,12 +112,13 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
         color: Colors.white,
         child: categoriesAsync.when(
           data: (categories) {
-            // Deduplicate categories by clean name
+            // Deduplicate categories by id
             final uniqueCategories = <Category>[];
-            final seenNames = <String>{};
+            final seenIds = <String>{};
             for (final c in categories) {
-              final trimmed = c.name.trim();
-              if (trimmed.isNotEmpty && seenNames.add(trimmed)) {
+              final lower = '${c.name} ${c.slug}'.toLowerCase();
+              if (lower.contains('test') || lower.contains('ທົດສອບ')) continue;
+              if (c.name.trim().isNotEmpty && seenIds.add(c.id)) {
                 uniqueCategories.add(c);
               }
             }
@@ -109,7 +157,9 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                                 width: 46,
                                 height: 46,
                                 decoration: BoxDecoration(
-                                  color: isSelected ? const Color(0xFFFB255A) : visuals.$2,
+                                  color: isSelected
+                                      ? const Color(0xFFFB255A)
+                                      : visuals.$2,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color: isSelected
@@ -120,7 +170,9 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                                   boxShadow: isSelected
                                       ? [
                                           BoxShadow(
-                                            color: const Color(0xFFFB255A).withValues(alpha: 0.3),
+                                            color: const Color(
+                                              0xFFFB255A,
+                                            ).withValues(alpha: 0.3),
                                             blurRadius: 8,
                                             offset: const Offset(0, 3),
                                           ),
@@ -146,7 +198,9 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                                   fontSize: 11,
                                   fontFamily: 'Inter',
                                   fontFamilyFallback: _fontFallback,
-                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -173,7 +227,9 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                ),
                               ),
                               child: const Icon(
                                 Icons.refresh_rounded,
@@ -216,7 +272,11 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
           error: (error, stack) => Center(
             child: TextButton.icon(
               onPressed: () => ref.invalidate(categoriesProvider),
-              icon: const Icon(Icons.refresh_rounded, size: 18, color: Color(0xFFF43F5E)),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                size: 18,
+                color: Color(0xFFF43F5E),
+              ),
               label: const Text(
                 'ໂຫຼດໝວດໝູ່ໃໝ່',
                 style: TextStyle(

@@ -29,9 +29,9 @@ void main() {
     expect(categories.length, 2);
     expect(categories.last.parentId, 'root');
     expect(gateway.calls, 1);
-    expect(gateway.variables['filter'], {
+    expect(gateway.variables['input'], {
       'fetchAll': true,
-      'includeInactive': false,
+      'isActive': 'active',
       'rootOnly': false,
     });
   });
@@ -43,13 +43,14 @@ void main() {
       gateway,
     ).getProducts((keyword: 'phone', categoryId: 'category-1', page: 2));
     expect(page.pageCount, 3);
-    expect(gateway.variables['filter'], {
+    expect(gateway.variables['input'], {
       'keyword': 'phone',
       'categoryId': 'category-1',
+      'includeDescendants': true,
       'currency': 'LAK',
       'page': 2,
       'limit': 12,
-      'includeInactive': false,
+      'isActive': 'active',
     });
   });
   test('all-category filter omits categoryId', () async {
@@ -60,7 +61,7 @@ void main() {
       gateway,
     ).getProducts((keyword: '', categoryId: null, page: 1));
     expect(
-      (gateway.variables['filter'] as Map).containsKey('categoryId'),
+      (gateway.variables['input'] as Map).containsKey('categoryId'),
       false,
     );
   });

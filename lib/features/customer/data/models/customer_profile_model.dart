@@ -10,7 +10,7 @@ class CustomerProfileModel extends CustomerProfile {
   });
   factory CustomerProfileModel.fromJson(Map<String, dynamic> json) =>
       CustomerProfileModel(
-        id: json['id'] as String,
+        id: (json['_id'] ?? json['id']) as String,
         firstName: json['firstName'] as String?,
         lastName: json['lastName'] as String?,
         email: json['email'] as String?,

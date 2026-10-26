@@ -7,7 +7,7 @@ class CustomerRemoteDataSource {
   Future<CustomerProfileModel> getProfile(String accessToken) async {
     final data = await gateway.execute(
       document:
-          'query MyCustomerProfile { myCustomerProfile { id firstName lastName email phone } }',
+          'query MyCustomerProfile { myCustomerProfile { _id firstName lastName email phone } }',
       accessToken: accessToken,
     );
     return CustomerProfileModel.fromJson(

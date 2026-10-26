@@ -27,7 +27,7 @@ class GraphQlAuthRemoteDataSource implements AuthRemoteDataSource {
   Future<AuthSessionModel> register(CustomerRegistration input) async {
     final data = await _gateway.execute(
       document:
-          'mutation RegisterCustomer(\$input: RegisterCustomerInput!) {'
+          'mutation RegisterCustomer(\$input: RegisterCustomerDto!) {'
           ' registerCustomer(input: \$input) { $_fields } }',
       variables: {
         'input': {
@@ -51,7 +51,7 @@ class GraphQlAuthRemoteDataSource implements AuthRemoteDataSource {
   }) async {
     final data = await _gateway.execute(
       document:
-          'mutation LoginCustomer(\$input: CustomerLoginInput!) {'
+          'mutation LoginCustomer(\$input: CustomerLoginDto!) {'
           ' loginCustomer(input: \$input) { $_fields } }',
       variables: {
         'input': {'identifier': identifier.trim(), 'password': password},
@@ -67,7 +67,7 @@ class GraphQlAuthRemoteDataSource implements AuthRemoteDataSource {
   }) async {
     final data = await _gateway.execute(
       document:
-          'mutation SocialLoginCustomer(\$input: SocialLoginCustomerInput!) {'
+          'mutation SocialLoginCustomer(\$input: SocialLoginCustomerDto!) {'
           ' socialLoginCustomer(input: \$input) { $_fields } }',
       variables: {
         'input': {'provider': provider, 'token': token},
@@ -80,7 +80,7 @@ class GraphQlAuthRemoteDataSource implements AuthRemoteDataSource {
   Future<AuthSessionModel> refresh(String refreshToken) async {
     final data = await _gateway.execute(
       document:
-          'mutation RefreshCustomerToken(\$input: RefreshTokenInput!) {'
+          'mutation RefreshCustomerToken(\$input: RefreshTokenDto!) {'
           ' refreshCustomerToken(input: \$input) { $_fields } }',
       variables: {
         'input': {'refreshToken': refreshToken},

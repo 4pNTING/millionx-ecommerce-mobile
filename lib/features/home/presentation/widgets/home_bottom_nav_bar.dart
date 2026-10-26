@@ -1,162 +1,187 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class _NavItem {
-  const _NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
+  const _NavItem({required this.iconAsset, required this.label});
 
-  final IconData icon;
-  final IconData activeIcon;
+  final String iconAsset;
   final String label;
 }
 
 /// Floating bottom navigation bar for MillionX mobile storefront.
 class HomeBottomNavBar extends StatelessWidget {
-  const HomeBottomNavBar({
-    super.key,
-    this.currentIndex = 0,
-    this.onTap,
-  });
+  const HomeBottomNavBar({super.key, this.currentIndex = 0, this.onTap});
 
   final int currentIndex;
   final ValueChanged<int>? onTap;
 
   static const List<_NavItem> _items = [
-    _NavItem(
-      icon: Icons.home_outlined,
-      activeIcon: Icons.home_rounded,
-      label: 'ຫນ້າຫລັກ',
-    ),
-    _NavItem(
-      icon: Icons.grid_view_outlined,
-      activeIcon: Icons.grid_view_rounded,
-      label: 'ຫມວດໝູ່',
-    ),
-    _NavItem(
-      icon: Icons.local_offer_outlined,
-      activeIcon: Icons.local_offer_rounded,
-      label: 'ໂປຣໂມຊັ່ນ',
-    ),
-    _NavItem(
-      icon: Icons.chat_bubble_outline_rounded,
-      activeIcon: Icons.chat_bubble_rounded,
-      label: 'ແຊ໊ດ',
-    ),
-    _NavItem(
-      icon: Icons.person_outline_rounded,
-      activeIcon: Icons.person_rounded,
-      label: 'ໂປຣໄຟລ໌',
-    ),
+    _NavItem(iconAsset: 'assets/icons/home_icon.png', label: 'ຫນ້າຫລັກ'),
+    _NavItem(iconAsset: 'assets/icons/catagories_icon.png', label: 'ໝວດໝູ່'),
+    _NavItem(iconAsset: 'assets/icons/cart_icon.png', label: 'ໂປຣໂມຊັ່ນ'),
+    _NavItem(iconAsset: 'assets/icons/chat_icon.png', label: 'ແຊ໊ດ'),
+    _NavItem(iconAsset: 'assets/icons/profile_icon.png', label: 'ໂປຮໄຟຣ'),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final activeIndex = currentIndex.clamp(0, _items.length - 1).toInt();
+    final availableWidth = (MediaQuery.sizeOf(context).width - 16)
+        .clamp(0.0, 309.0)
+        .toDouble();
+
     return Container(
-      constraints: const BoxConstraints(maxWidth: 402),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      height: 65,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      width: availableWidth,
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(50),
         boxShadow: const [
           BoxShadow(
             color: Color(0x3F000000),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-            spreadRadius: 0,
+            blurRadius: 5,
+            offset: Offset.zero,
+            spreadRadius: 1,
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(_items.length, (index) {
-          final isSelected = index == currentIndex;
-          final item = _items[index];
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemScale = ((constraints.maxWidth - 30) / 267)
+              .clamp(0.0, 1.0)
+              .toDouble();
+          final itemGap = (constraints.maxWidth - 10 - 267 * itemScale) / 4;
+          final activeLeft = 5 + activeIndex * (40 * itemScale + itemGap);
 
-          return Flexible(
-            flex: isSelected ? 3 : 2,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => onTap?.call(index),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                padding: isSelected
-                    ? const EdgeInsets.symmetric(horizontal: 10, vertical: 8)
-                    : const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                decoration: isSelected
-                    ? const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Color(0xFFFB658D),
-                            Color(0xFFFB255A),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                      )
-                    : const BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                child: Center(
-                  child: isSelected
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              item.activeIcon,
-                              color: Colors.white,
-                              size: 18,
+          return Stack(
+            clipBehavior: Clip.hardEdge,
+            children: [
+              AnimatedPositioned(
+                key: const ValueKey('active-nav-item'),
+                duration: const Duration(milliseconds: 260),
+                curve: Curves.easeOutCubic,
+                left: activeLeft,
+                top: 5,
+                width: 107 * itemScale,
+                height: 40,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onTap?.call(activeIndex),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFB255A),
+                      borderRadius: BorderRadius.circular(30 * itemScale),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 40 * itemScale,
+                          height: 40,
+                          child: Center(
+                            child: SvgPicture.asset(
+                              _items[activeIndex].iconAsset.replaceFirst(
+                                '.png',
+                                '.svg',
+                              ),
+                              width: 20 * itemScale,
+                              height: 20 * itemScale,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
                             ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                item.label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 12 * itemScale),
+                        Expanded(
+                          child: SizedBox(
+                            height: 40,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 180),
+                              switchInCurve: Curves.easeOut,
+                              switchOutCurve: Curves.easeIn,
+                              transitionBuilder: (child, animation) =>
+                                  FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  ),
+                              child: Align(
+                                key: ValueKey(activeIndex),
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _items[activeIndex].label,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12 * itemScale,
+                                    height: 1,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
                               ),
                             ),
-                          ],
-                        )
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              item.icon,
-                              color: const Color(0xFF151515),
-                              size: 20,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              item.label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Color(0xFF151515),
-                                fontSize: 10,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              for (var index = 0; index < _items.length; index++)
+                if (index != activeIndex)
+                  _buildInactiveItem(index, activeIndex, itemScale, itemGap),
+            ],
           );
-        }),
+        },
+      ),
+    );
+  }
+
+  Widget _buildInactiveItem(
+    int index,
+    int activeIndex,
+    double itemScale,
+    double itemGap,
+  ) {
+    final item = _items[index];
+    final itemLeft = index < activeIndex
+        ? 5 + index * (40 * itemScale + itemGap)
+        : 5 +
+              activeIndex * (40 * itemScale + itemGap) +
+              107 * itemScale +
+              itemGap +
+              (index - activeIndex - 1) * (40 * itemScale + itemGap);
+
+    return AnimatedPositioned(
+      key: ValueKey('nav-item-$index'),
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+      left: itemLeft,
+      top: 5,
+      width: 40 * itemScale,
+      height: 40,
+      child: Semantics(
+        button: true,
+        selected: false,
+        label: item.label,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => onTap?.call(index),
+          child: Center(
+            child: SvgPicture.asset(
+              item.iconAsset.replaceFirst('.png', '.svg'),
+              width: 20 * itemScale,
+              height: 20 * itemScale,
+              colorFilter: const ColorFilter.mode(
+                Color(0xFF151515),
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
