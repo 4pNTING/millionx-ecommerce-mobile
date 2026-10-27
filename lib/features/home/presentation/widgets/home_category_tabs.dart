@@ -48,23 +48,40 @@ class _HomeCategoryTabsState extends ConsumerState<HomeCategoryTabs> {
         height: 42,
         child: categoriesAsync.when(
           data: (categories) {
-            // Deduplicate categories by id
-            final uniqueCategories = <Category>[];
+            // Filter root categories (parentId == null)
+            final rootCategories = <Category>[];
+            final seenNames = <String>{};
             final seenIds = <String>{};
             for (final c in categories) {
               final lower = '${c.name} ${c.slug}'.toLowerCase();
               if (lower.contains('test') || lower.contains('ທົດສອບ')) continue;
-              if (c.name.trim().isNotEmpty && seenIds.add(c.id)) {
-                uniqueCategories.add(c);
+              if (c.parentId == null && c.name.trim().isNotEmpty) {
+                final cleanName = c.name.trim();
+                if (seenIds.add(c.id) && seenNames.add(cleanName)) {
+                  rootCategories.add(c);
+                }
               }
             }
 
             final items = [
               (id: null, name: 'ທັງໝົດ'),
-              ...uniqueCategories.map(
+              ...rootCategories.map(
                 (c) => (id: c.id as String?, name: c.name),
               ),
             ];
+
+            // Helper to find root category ancestor
+            String? findRootId(String? id) {
+              if (id == null) return null;
+              final map = {for (final c in categories) c.id: c};
+              var cur = map[id];
+              while (cur != null && cur.parentId != null) {
+                cur = map[cur.parentId];
+              }
+              return cur?.id;
+            }
+
+            final activeRootId = findRootId(_selectedId);
 
             return ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -74,7 +91,7 @@ class _HomeCategoryTabsState extends ConsumerState<HomeCategoryTabs> {
               separatorBuilder: (context, index) => const SizedBox(width: 20),
               itemBuilder: (context, index) {
                 final item = items[index];
-                final isSelected = _selectedId == item.id;
+                final isSelected = activeRootId == item.id;
 
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,

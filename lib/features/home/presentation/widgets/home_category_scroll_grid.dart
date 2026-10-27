@@ -112,13 +112,66 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
         color: Colors.white,
         child: categoriesAsync.when(
           data: (categories) {
-            // Deduplicate categories by id
-            final uniqueCategories = <Category>[];
-            final seenIds = <String>{};
-            for (final c in categories) {
+            // Filter out test categories
+            final validCategories = categories.where((c) {
               final lower = '${c.name} ${c.slug}'.toLowerCase();
-              if (lower.contains('test') || lower.contains('ທົດສອບ')) continue;
-              if (c.name.trim().isNotEmpty && seenIds.add(c.id)) {
+              return !lower.contains('test') &&
+                  !lower.contains('ທົດສອບ') &&
+                  c.name.trim().isNotEmpty;
+            }).toList();
+
+            // Helper to find root category ancestor
+            String? findRootId(String? id) {
+              if (id == null) return null;
+              final map = {for (final c in categories) c.id: c};
+              var cur = map[id];
+              while (cur != null && cur.parentId != null) {
+                cur = map[cur.parentId];
+              }
+              return cur?.id;
+            }
+
+            final activeRootId = findRootId(selectedCategoryId);
+
+            // Select sub-categories to display:
+            List<Category> candidates;
+            if (activeRootId != null) {
+              // Find all descendant IDs of activeRootId (children & sub-children)
+              final descendantIds = <String>{activeRootId};
+              bool added = true;
+              while (added) {
+                added = false;
+                for (final c in validCategories) {
+                  if (c.parentId != null &&
+                      descendantIds.contains(c.parentId) &&
+                      !descendantIds.contains(c.id)) {
+                    descendantIds.add(c.id);
+                    added = true;
+                  }
+                }
+              }
+              candidates = validCategories
+                  .where((c) => c.parentId != null && descendantIds.contains(c.id))
+                  .toList();
+            } else {
+              // Default (All): display all sub-categories (parentId != null)
+              candidates = validCategories
+                  .where((c) => c.parentId != null)
+                  .toList();
+            }
+
+            // Fallback if no sub-categories exist
+            if (candidates.isEmpty) {
+              candidates = validCategories;
+            }
+
+            // Deduplicate sub-categories by clean name and ID
+            final uniqueCategories = <Category>[];
+            final seenNames = <String>{};
+            final seenIds = <String>{};
+            for (final c in candidates) {
+              final cleanName = c.name.trim();
+              if (seenIds.add(c.id) && seenNames.add(cleanName)) {
                 uniqueCategories.add(c);
               }
             }
@@ -130,7 +183,7 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Real categories from backend displayed FIRST
+                  // Real sub-categories from backend displayed
                   ...uniqueCategories.map((cat) {
                     final visuals = _getCategoryVisuals(cat.slug, cat.name);
                     final isSelected = selectedCategoryId == cat.id;
@@ -140,7 +193,7 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                       onTap: () {
                         // Toggle or select
                         if (isSelected) {
-                          onCategorySelected?.call(null);
+                          onCategorySelected?.call(activeRootId);
                         } else {
                           onCategorySelected?.call(cat.id);
                         }
@@ -210,12 +263,12 @@ class HomeCategoryScrollGrid extends ConsumerWidget {
                     );
                   }),
 
-                  // Shortcut to view all categories
+                   // Shortcut to view all categories in active group
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () => onCategorySelected?.call(null),
+                      onTap: () => onCategorySelected?.call(activeRootId),
                       child: SizedBox(
                         width: 68,
                         child: Column(
