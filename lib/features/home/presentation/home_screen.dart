@@ -14,6 +14,22 @@ import 'widgets/home_new_user_promo_bar.dart';
 import 'widgets/home_product_feed.dart';
 import 'widgets/home_promotion_banner.dart';
 
+/// Bottom navigation tabs for MillionX storefront.
+enum HomeNavTab {
+  home,
+  categories,
+  promotions,
+  chat,
+  account;
+
+  static HomeNavTab fromIndex(int index) {
+    if (index >= 0 && index < HomeNavTab.values.length) {
+      return HomeNavTab.values[index];
+    }
+    return HomeNavTab.home;
+  }
+}
+
 /// Clean, modular Home Screen with fixed responsive bottom navigation.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -23,79 +39,112 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _currentIndex = 0;
+  HomeNavTab _currentTab = HomeNavTab.home;
   String? _selectedCategoryId;
   String _keyword = '';
-  int _currentPage = 1;
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    final maxScroll = position.maxScrollExtent;
+    final currentScroll = position.pixels;
+    // Requirement 2: เลื่อนใกล้ท้ายประมาณ 300–500 px จึงโหลดหน้าถัดไป
+    const threshold = 400.0;
+    if (maxScroll - currentScroll <= threshold) {
+      ref.read(productFeedProvider.notifier).loadMore();
+    }
+  }
+
+  void _selectCategory(String? catId) {
+    setState(() {
+      _selectedCategoryId = catId;
+    });
+    ref
+        .read(productFeedProvider.notifier)
+        .setFilter(categoryId: catId, updateCategory: true);
+  }
+
+  void _updateSearch(String value) {
+    final trimmed = value.trim();
+    setState(() {
+      _keyword = trimmed;
+    });
+    ref
+        .read(productFeedProvider.notifier)
+        .setFilter(keyword: trimmed, updateKeyword: true);
+  }
+
   void _onTabTapped(int index) {
-    if (index == 0) {
-      setState(() => _currentIndex = 0);
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-      return;
+    final tab = HomeNavTab.fromIndex(index);
+    switch (tab) {
+      case HomeNavTab.home:
+        setState(() => _currentTab = HomeNavTab.home);
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+        break;
+      case HomeNavTab.categories:
+        setState(() => _currentTab = HomeNavTab.categories);
+        break;
+      case HomeNavTab.account:
+        final auth = ref.read(authControllerProvider);
+        if (auth.isSignedIn) {
+          context.push('/account');
+        } else {
+          context.push('/login');
+        }
+        break;
+      case HomeNavTab.promotions:
+      case HomeNavTab.chat:
+        setState(() => _currentTab = tab);
+        break;
     }
-
-    if (index == 1) {
-      // Category tab
-      setState(() => _currentIndex = 1);
-      return;
-    }
-
-    if (index == 4) {
-      // Profile / Account tab
-      final auth = ref.read(authControllerProvider);
-      if (auth.isSignedIn) {
-        context.push('/account');
-      } else {
-        context.push('/login');
-      }
-      return;
-    }
-
-    setState(() => _currentIndex = index);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsAsync = ref.watch(
-      productsProvider((
-        keyword: _keyword,
-        categoryId: _selectedCategoryId,
-        page: _currentPage,
-      )),
-    );
-    final productCount = productsAsync.asData?.value.items.length ?? 6;
+    final feedState = ref.watch(productFeedProvider);
+    final productCount = feedState.items.length;
     final rowCount = (productCount / 2).ceil();
-    final feedHeight = 80.0 + (rowCount == 0 ? 320.0 : rowCount * 280.0) + 70.0;
-    final designHeight = 570.0 + feedHeight + 60.0;
+    final feedHeight =
+        80.0 +
+        (rowCount == 0 ? 320.0 : rowCount * 308.0) +
+        (feedState.isLoadingMore || feedState.loadMoreError != null
+            ? 80.0
+            : 40.0);
+    final designHeight = 512.0 + feedHeight + 60.0;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // If Category Tab (index 1) is selected, show CategoryScreen directly
+          // If Category Tab is selected, show CategoryScreen directly
           Positioned.fill(
-            child: _currentIndex == 1
+            child: _currentTab == HomeNavTab.categories
                 ? CategoryScreen(
                     onCategorySelected: (catId) {
                       setState(() {
-                        _selectedCategoryId = catId;
-                        _currentPage = 1;
-                        _currentIndex = 0;
+                        _currentTab = HomeNavTab.home;
                       });
+                      _selectCategory(catId);
                     },
                   )
                 : SafeArea(
@@ -106,94 +155,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const designWidth = 440.0;
                         final scale = screenWidth / designWidth;
 
-                        return SingleChildScrollView(
-                          controller: _scrollController,
-                          physics: const ClampingScrollPhysics(),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                width: screenWidth,
-                                height: designHeight * scale,
-                                child: FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  alignment: Alignment.topCenter,
-                                  child: SizedBox(
-                                    width: designWidth,
-                                    height: designHeight,
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        HomeProductFeed(
-                                          selectedCategoryId: _selectedCategoryId,
-                                          keyword: _keyword,
-                                          currentPage: _currentPage,
-                                          onPageChanged: (newPage) {
-                                            setState(() => _currentPage = newPage);
-                                            if (_scrollController.hasClients) {
-                                              _scrollController.animateTo(
-                                                540,
-                                                duration: const Duration(milliseconds: 300),
-                                                curve: Curves.easeOut,
-                                              );
-                                            }
-                                          },
-                                          onClearCategory: () {
-                                            setState(() {
-                                              _selectedCategoryId = null;
-                                              _currentPage = 1;
-                                            });
-                                          },
-                                        ),
-                                        HomeHeaderBar(
-                                          initialKeyword: _keyword,
-                                          onSearchChanged: (value) {
-                                            setState(() {
-                                              _keyword = value.trim();
-                                              _currentPage = 1;
-                                            });
-                                          },
-                                          onSearchSubmitted: (value) {
-                                            setState(() {
-                                              _keyword = value.trim();
-                                              _currentPage = 1;
-                                            });
-                                          },
-                                        ),
-                                        HomeCategoryScrollGrid(
-                                          selectedCategoryId: _selectedCategoryId,
-                                          onCategorySelected: (id) {
-                                            setState(() {
-                                              _selectedCategoryId = id;
-                                              _currentPage = 1;
-                                            });
-                                          },
-                                        ),
-                                        const HomePromotionBanner(),
-                                        HomeCategoryTabs(
-                                          selectedCategoryId: _selectedCategoryId,
-                                          onCategorySelected: (id) {
-                                            setState(() {
-                                              _selectedCategoryId = id;
-                                              _currentPage = 1;
-                                            });
-                                          },
-                                        ),
-                                        Positioned(
-                                          left: 0,
-                                          top: 504,
-                                          width: 440,
-                                          child: HomeNewUserPromoBar(
-                                            onTap: () => context.push('/login'),
+                        return NotificationListener<ScrollNotification>(
+                          onNotification: (notification) {
+                            if (notification.metrics.axis == Axis.vertical) {
+                              final maxScroll =
+                                  notification.metrics.maxScrollExtent;
+                              final currentScroll =
+                                  notification.metrics.pixels;
+                              const threshold = 400.0;
+                              if (maxScroll - currentScroll <= threshold) {
+                                ref
+                                    .read(productFeedProvider.notifier)
+                                    .loadMore();
+                              }
+                            }
+                            return false;
+                          },
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            physics: const ClampingScrollPhysics(),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: screenWidth,
+                                  height: designHeight * scale,
+                                  child: FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    alignment: Alignment.topCenter,
+                                    child: SizedBox(
+                                      width: designWidth,
+                                      height: designHeight,
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          HomeProductFeed(
+                                            selectedCategoryId:
+                                                _selectedCategoryId,
+                                            keyword: _keyword,
+                                            onClearCategory: () =>
+                                                _selectCategory(null),
                                           ),
-                                        ),
-                                      ],
+                                          HomeHeaderBar(
+                                            initialKeyword: _keyword,
+                                            onSearchChanged: _updateSearch,
+                                            onSearchSubmitted: _updateSearch,
+                                          ),
+                                          HomeCategoryScrollGrid(
+                                            selectedCategoryId:
+                                                _selectedCategoryId,
+                                            onCategorySelected: _selectCategory,
+                                          ),
+                                          const HomePromotionBanner(),
+                                          HomeCategoryTabs(
+                                            selectedCategoryId:
+                                                _selectedCategoryId,
+                                            onCategorySelected: _selectCategory,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              // Bottom spacing to ensure content is not covered by the floating navbar
-                              const SizedBox(height: 90),
-                            ],
+                                // Bottom spacing to ensure content is not covered by the floating navbar
+                                const SizedBox(height: 90),
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -233,7 +259,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Center(
                           child: HomeBottomNavBar(
-                            currentIndex: _currentIndex,
+                            currentIndex: _currentTab.index,
                             onTap: _onTabTapped,
                           ),
                         ),

@@ -75,3 +75,12 @@ class ProductImage {
 }
 
 typedef ProductFilter = ({String keyword, String? categoryId, int page});
+
+enum ProductActiveStatus {
+  active('active'),
+  inactive('inactive'),
+  all('all');
+
+  const ProductActiveStatus(this.value);
+  final String value;
+}

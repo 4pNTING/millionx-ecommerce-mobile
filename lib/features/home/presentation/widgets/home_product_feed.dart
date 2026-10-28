@@ -40,20 +40,16 @@ class HomeProductFeed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeFilter = (
-      keyword: keyword,
-      categoryId: selectedCategoryId,
-      page: currentPage,
-    );
-    final productsAsync = ref.watch(productsProvider(activeFilter));
+    final feedState = ref.watch(productFeedProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
 
     // Resolve selected category name if applicable
+    final activeCategoryId = selectedCategoryId ?? feedState.categoryId;
     String? categoryName;
-    if (selectedCategoryId != null) {
+    if (activeCategoryId != null) {
       categoriesAsync.whenData((categories) {
         for (final c in categories) {
-          if (c.id == selectedCategoryId) {
+          if (c.id == activeCategoryId) {
             categoryName = c.name;
             break;
           }
@@ -63,7 +59,7 @@ class HomeProductFeed extends ConsumerWidget {
 
     return Positioned(
       left: 0,
-      top: 568,
+      top: 512,
       child: SizedBox(
         width: 440,
         child: Padding(
@@ -162,141 +158,8 @@ class HomeProductFeed extends ConsumerWidget {
               const SizedBox(height: 14),
 
               // Product Feed Content
-              productsAsync.when(
-                data: (pageResult) {
-                  final items = pageResult.items;
-
-                  if (items.isEmpty) {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFF1F2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.inventory_2_outlined,
-                              size: 44,
-                              color: Color(0xFFF43F5E),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Text(
-                            categoryName != null
-                                ? 'ບໍ່ພົບສິນຄ້າໃນໝວດ "$categoryName"'
-                                : 'ບໍ່ມີສິນຄ້າໃນລະບົບເທື່ອ',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Color(0xFF1E293B),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Inter',
-                              fontFamilyFallback: _fontFallback,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'ກະລຸນາເລືອກໝວດໝູ່ອື່ນ ຫຼື ກວດເບິ່ງສິນຄ້າທັງໝົດ',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF64748B),
-                              fontSize: 12,
-                              fontFamilyFallback: _fontFallback,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: onClearCategory,
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
-                            label: const Text('ເບິ່ງສິນຄ້າທັງໝົດ'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF43F5E),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.68,
-                        ),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          final product = items[index];
-                          return _buildProductCard(context, product);
-                        },
-                      ),
-                      if (pageResult.pageCount > 1) ...[
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: currentPage > 1
-                                  ? () => onPageChanged?.call(currentPage - 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_left_rounded, size: 18),
-                              label: const Text('ກ່ອນໜ້າ'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF0F172A),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 14),
-                              child: Text(
-                                'ໜ້າ $currentPage / ${pageResult.pageCount}',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF475569),
-                                  fontFamilyFallback: _fontFallback,
-                                ),
-                              ),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: currentPage < pageResult.pageCount
-                                  ? () => onPageChanged?.call(currentPage + 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_right_rounded, size: 18),
-                              label: const Text('ຕໍ່ໄປ'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF0F172A),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  );
-                },
-                loading: () => GridView.builder(
+              if (feedState.isLoading)
+                GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -307,8 +170,9 @@ class HomeProductFeed extends ConsumerWidget {
                   ),
                   itemCount: 4,
                   itemBuilder: (context, index) => _buildSkeletonCard(),
-                ),
-                error: (error, stack) => Container(
+                )
+              else if (feedState.error != null && feedState.items.isEmpty)
+                Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -317,7 +181,8 @@ class HomeProductFeed extends ConsumerWidget {
                   ),
                   child: Column(
                     children: [
-                      const Icon(Icons.error_outline_rounded, size: 36, color: Color(0xFFF43F5E)),
+                      const Icon(Icons.error_outline_rounded,
+                          size: 36, color: Color(0xFFF43F5E)),
                       const SizedBox(height: 8),
                       const Text(
                         'ເກີດຂໍ້ຜິດພາດໃນການໂຫຼດສິນຄ້າ',
@@ -329,7 +194,8 @@ class HomeProductFeed extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton(
-                        onPressed: () => ref.invalidate(productsProvider(activeFilter)),
+                        onPressed: () =>
+                            ref.read(productFeedProvider.notifier).retryInitial(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFF43F5E),
                           foregroundColor: Colors.white,
@@ -338,8 +204,166 @@ class HomeProductFeed extends ConsumerWidget {
                       ),
                     ],
                   ),
+                )
+              else if (feedState.items.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFF1F2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.inventory_2_outlined,
+                          size: 44,
+                          color: Color(0xFFF43F5E),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        categoryName != null
+                            ? 'ບໍ່ພົບສິນຄ້າໃນໝວດ "$categoryName"'
+                            : (feedState.keyword.isNotEmpty
+                                ? 'ບໍ່ພົບສິນຄ້າສຳລັບ "${feedState.keyword}"'
+                                : 'ບໍ່ມີສິນຄ້າໃນລະບົບເທື່ອ'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF1E293B),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Inter',
+                          fontFamilyFallback: _fontFallback,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'ກະລຸນາກວດເບິ່ງຄຳຄົ້ນຫາ ຫຼື ລອງເລືອກໝວດອື່ນ',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF64748B),
+                          fontSize: 12,
+                          fontFamilyFallback: _fontFallback,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.68,
+                      ),
+                      itemCount: feedState.items.length,
+                      itemBuilder: (context, index) {
+                        final product = feedState.items[index];
+                        return _buildProductCard(context, product);
+                      },
+                    ),
+                    if (feedState.isLoadingMore)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFFF43F5E)),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'ກຳລັງໂຫຼດເພີ່ມເຕີມ...',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade600,
+                                  fontFamily: 'Inter',
+                                  fontFamilyFallback: _fontFallback,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (feedState.loadMoreError != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                'ບໍ່ສາມາດໂຫຼດຂໍ້ມູນເພີ່ມເຕີມໄດ້',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade700,
+                                  fontFamily: 'Inter',
+                                  fontFamilyFallback: _fontFallback,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () => ref
+                                    .read(productFeedProvider.notifier)
+                                    .retryLoadMore(),
+                                icon: const Icon(Icons.refresh_rounded, size: 16),
+                                label: const Text('ລອງໃໝ່'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFFF43F5E),
+                                  side: const BorderSide(
+                                      color: Color(0xFFF43F5E)),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (!feedState.hasMore &&
+                        !feedState.isLoadingMore &&
+                        feedState.loadMoreError == null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'ໝົດລາຍການສິນຄ້າແລ້ວ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade400,
+                              fontFamilyFallback: _fontFallback,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
             ],
           ),
         ),

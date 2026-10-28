@@ -51,7 +51,7 @@ class _HomeHeaderBarState extends State<HomeHeaderBar> {
       top: 0,
       child: SizedBox(
         width: 440,
-        height: 1960,
+        height: 248,
         child: Stack(
           clipBehavior: Clip.none,
           children: [

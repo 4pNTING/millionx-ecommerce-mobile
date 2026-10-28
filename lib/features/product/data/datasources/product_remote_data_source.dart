@@ -12,34 +12,40 @@ class ProductRemoteDataSource {
     images { _id variantId url altText sortOrder }
   ''';
   static const listDocument =
-      'query StoreProducts(\$input: LoadProductDto) { products(input: \$input) { total page limit items { $fields } } }';
+      'query Products(\$input: LoadProductDto) { products(input: \$input) { total page limit items { $fields } } }';
   static const detailDocument =
       'query StoreProduct(\$_id: String, \$slug: String, \$currency: String) { product(_id: \$_id, slug: \$slug, currency: \$currency) { $fields } }';
 
-  Future<PageResult<Product>> getProducts(ProductFilter filter) async {
+  Future<PageResult<Product>> getProducts(
+    ProductFilter filter, {
+    int limit = 20,
+    String currency = 'LAK',
+  }) async {
     final data = await _gateway.execute(
       document: listDocument,
       variables: {
         'input': {
           if (filter.keyword.trim().isNotEmpty) 'keyword': filter.keyword.trim(),
-          if (filter.categoryId != null && filter.categoryId!.isNotEmpty)
+          if (filter.categoryId != null && filter.categoryId!.isNotEmpty) ...{
             'categoryId': filter.categoryId,
-          'includeDescendants': true,
-          'currency': 'LAK',
+            'includeDescendants': true,
+          },
+          'currency': currency,
           'page': filter.page,
-          'limit': 12,
-          'isActive': 'active',
+          'limit': limit,
+          'isActive': ProductActiveStatus.active.value,
         },
       },
     );
-    final page = data['products'] as Map<String, dynamic>;
+    final page = (data['products'] as Map<String, dynamic>?) ?? {};
+    final rawItems = (page['items'] as List?) ?? [];
     return PageResult(
-      items: (page['items'] as List)
+      items: rawItems
           .map<Product>((item) => ProductModel.fromJson(item as Map<String, dynamic>))
           .toList(),
-      total: page['total'] as int,
-      page: page['page'] as int,
-      limit: page['limit'] as int,
+      total: (page['total'] as num?)?.toInt() ?? 0,
+      page: (page['page'] as num?)?.toInt() ?? filter.page,
+      limit: (page['limit'] as num?)?.toInt() ?? limit,
     );
   }
 

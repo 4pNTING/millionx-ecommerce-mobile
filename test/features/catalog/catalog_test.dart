@@ -37,25 +37,25 @@ void main() {
   });
   test('products send pagination, currency and optional category', () async {
     final gateway = _Gateway({
-      'products': {'items': [], 'total': 30, 'page': 2, 'limit': 12},
+      'products': {'items': [], 'total': 30, 'page': 2, 'limit': 20},
     });
     final page = await ProductRemoteDataSource(
       gateway,
     ).getProducts((keyword: 'phone', categoryId: 'category-1', page: 2));
-    expect(page.pageCount, 3);
+    expect(page.pageCount, 2);
     expect(gateway.variables['input'], {
       'keyword': 'phone',
       'categoryId': 'category-1',
       'includeDescendants': true,
       'currency': 'LAK',
       'page': 2,
-      'limit': 12,
+      'limit': 20,
       'isActive': 'active',
     });
   });
   test('all-category filter omits categoryId', () async {
     final gateway = _Gateway({
-      'products': {'items': [], 'total': 0, 'page': 1, 'limit': 12},
+      'products': {'items': [], 'total': 0, 'page': 1, 'limit': 20},
     });
     await ProductRemoteDataSource(
       gateway,

@@ -97,13 +97,13 @@ class _CatalogGateway implements GraphQlGateway {
         'categories': {'items': []},
       };
     }
-    if (document.contains('StoreProducts')) {
+    if (document.contains('StoreProducts') || document.contains('Products')) {
       return {
         'products': {
           'items': [product],
           'total': 1,
           'page': 1,
-          'limit': 12,
+          'limit': 20,
         },
       };
     }
