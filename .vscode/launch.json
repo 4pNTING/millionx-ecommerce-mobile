@@ -10,11 +10,11 @@
       "toolArgs": ["--dart-define=API_BASE_URL=http://localhost:3001/api-gateway"]
     },
     {
-      "name": "MillionX Store · iPhone (192.168.100.51)",
+      "name": "MillionX Store · Physical Device (LAN IP)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "toolArgs": ["--dart-define=API_BASE_URL=http://192.168.100.51:3001/api-gateway"]
+      "toolArgs": ["--dart-define=API_BASE_URL=http://YOUR_LOCAL_IP:3001/api-gateway"]
     },
     {
       "name": "MillionX Store · Chrome",
